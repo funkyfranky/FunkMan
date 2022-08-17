@@ -36,14 +36,21 @@ class FunkMan():
         # Read config file.
         _ReadConfig(self)
 
+        # Create funkplot instance.
+        self.funkplot=FunkPlot()
+
         # Create funkbot instance.
         self.funkbot=FunkBot(self.token, self.channelID)
 
         # Create funksocket instance.
-        self.funksock=FunkSocket(self.funkbot, self.host, self.port)
+        self.funksock=FunkSocket(Host=self.host, Port=self.port)
+
+        # Set Bot.
+        self.funksock.SetFunkBot(self.funkbot)
+
+        # Set Plot.
+        self.funksock.SetFunkPlot(self.funkplot)
         
-        # Create funkplot instance.
-        self.funkplot=FunkPlot()
 
     def Start(self):
         """

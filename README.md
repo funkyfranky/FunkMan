@@ -1,2 +1,2 @@
-# funkman
- Discot bot interface for Moose
+# FunkMan
+ Discord bot interface for Moose.

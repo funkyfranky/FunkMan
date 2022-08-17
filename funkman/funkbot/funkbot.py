@@ -9,13 +9,10 @@ import threading
 import matplotlib.pyplot as plt
 import io
 
-# This should be used instead of the discord.Client
-#from discord.ext.commands import Bot
-
-#TOKEN="MTAwNTAwMDA0NDc4MjU2MzQ0MQ.GfFrg2.JtrXWtXAWF3DlzOpK-cYN9Ah_sN7us_36wVbN8"
-
-
 class FunkBot(discord.Client):
+    """
+    API class wrapper for Discord based on discord.py.
+    """
 
     def __init__(self, Token: str, ChannelID: int):
 
@@ -36,6 +33,7 @@ class FunkBot(discord.Client):
         except:
             print(f"ERROR: Could not get channel with ID={self.channelID}")
 
+        # Info that bot is online and ready.
         print('Connected as {0.name} [ID: {0.id}]'.format(self.user))
 
         # Set message to channel.
@@ -71,10 +69,7 @@ class FunkBot(discord.Client):
             discordThread.start()
         else:
             print(f"Starting Bot Client with Token {self.token}")
-            try:
-                self.run(self.token)
-            except:
-                self.logout()
+            self.run(self.token)
 
     async def SendMessage(self, Text: str):
         """
@@ -105,11 +100,14 @@ class FunkBot(discord.Client):
         Send text message to channel using loop.create_task().
         """
         try:
+            # Rewind stream.
             DataStream.seek(0)
+
             # Create data stream.
-            file= discord.File(DataStream, filename="funkbot.png", spoiler=True)
+            file= discord.File(DataStream, filename="funkbot.png", spoiler=False)
             
-            #self.loop.create_task(self.channel.send(Text))
+            # Send discord file.
+            self.SendDiscordFile(file)
         except:
             print("ERROR: Could not send text!")
 
@@ -123,16 +121,10 @@ class FunkBot(discord.Client):
 
         # Seve figure in data stream.
         #fig.savefig(data_stream, format='png', bbox_inches="tight", dpi=150)
-        fig.savefig(data_stream, format='png') #, bbox_inches="tight")
+        fig.savefig(data_stream, format='png')
 
         # Close figure.
         plt.close(fig)
 
-        # Rewind data stream.
-        data_stream.seek(0)
-
-        # Create data stream.
-        file= discord.File(data_stream, filename="funkbot.png", spoiler=False)
-
-        # Send.
-        self.SendDiscordFile(file)
+        # Send data stream.
+        self.SendIO(data_stream)

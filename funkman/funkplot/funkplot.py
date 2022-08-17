@@ -49,24 +49,26 @@ class AircraftType(Enum):
 
 class FunkPlot():
 
-    def __init__(self) -> None:
+    def __init__(self, ImagePath="./images/") -> None:
 
         # Info message.
         print("Init FunkPlot: Reading images...")
 
+        path=ImagePath
+
         # Read images:
-        self.imageBombCircle=plt.imread("D:/Images/bombcircle.png")
-        self.imageStrafePit=plt.imread("D:/Images/StrafeImage.png")
+        self.imageBombCircle = plt.imread(path+"BombCircle.png")
+        self.imageStrafePit  = plt.imread(path+"StrafePit.png")
 
-        self.imageCVNside = plt.imread('D:/Images/boat05.png')
-        self.imageCVNtop  = plt.imread('D:/Images/boat03.png')
+        self.imageCVNside    = plt.imread(path+'CarrierCVN_Side.png')
+        self.imageCVNtop     = plt.imread(path+'CarrierCVN_TopDown.png')
 
-        self.imageLHAside = plt.imread('D:/Images/boat05_2.png')
-        self.imageLHAtop  = plt.imread('D:/Images/boat03_2.png')
+        self.imageLHAside    = plt.imread(path+'CarrierLHA_Side.png')
+        self.imageLHAtop     = plt.imread(path+'CarrierLHA_Side.png')
 
-        self.imageCrater  = plt.imread("D:/Images/crater.png")
-        self.imageNorthUp = plt.imread("D:/Images/NorthUp.png")
-        self.imageBullet  = plt.imread("D:/Images/bulletHoleImage.png")
+        self.imageCrater     = plt.imread(path+"Crater.png")
+        self.imageNorthUp    = plt.imread(path+"NorthUp.png")
+        self.imageBullet     = plt.imread(path+"BulletHole.png")
 
 
     def _GetAoA(self, actype: str):

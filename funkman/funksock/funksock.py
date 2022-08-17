@@ -20,15 +20,6 @@ class FunkHandler(socketserver.BaseRequestHandler):
     when sending data back via sendto().
     """
 
-    def __init__(self, request, client_address, server, funkbot: FunkBot, funkplot: FunkPlot) -> None:
-
-        # Init parent class.
-        super().__init__(request, client_address, server)
-
-        self.funkbot=funkbot
-        self.funkplot=funkplot
-
-
     def handle(self):
 
         # Get data.
@@ -49,53 +40,66 @@ class FunkHandler(socketserver.BaseRequestHandler):
             print(json.dumps(table, indent=4, sort_keys=True))
             print("---------------")
 
-        self.EvalTable(table)
+        # Evaluate table data.
+        self.EvalTable(table, self.server.funkbot, self.server.funkplot)
 
-        print("EOF----------\n")
+    def EvalTable(self, table, funkbot: FunkBot, funkplot: FunkPlot):
+        """Evaluate table."""
 
-    def EvalTable(self, table):
         # Treat different cases.
         if "messageString" in table:
             text=table["messageString"]
-            print("Got bomb result!")
-            self.funkbot.SendText(text)
+            print("Got text message!")
+            funkbot.SendText(text)
         elif "type" in table:
             if table["type"]=="Bomb Result":
                 print("Got bomb result!")
-                fig, ax=self.funkplot.PlotBombRun(table)
-                self.funkbot.SendFig(fig)
+                fig, ax=funkplot.PlotBombRun(table)
+                funkbot.SendFig(fig)
             elif table["type"]=="Strafe Result":    
                 print("Got strafe result!")
-                fig, ax=self.funkplot.PlotStrafeRun(table)
-                self.funkbot.SendFig(fig)
+                fig, ax=funkplot.PlotStrafeRun(table)
+                funkbot.SendFig(fig)
             elif table["type"]=="Trap Sheet":                
                 print("Got trap sheet!")
-                fig, ax=self.funkplot.PlotTrapSheet(table)
-                self.funkbot.SendFig(fig)
+                fig, ax=funkplot.PlotTrapSheet(table)
+                funkbot.SendFig(fig)
             else:
                 print("ERROR: Unknown type in table!")
         else:
             print("Unknown message type!")        
 
 class FunkSocket():
+    """
+    UDP socket server.
+    """
 
-    def __init__(self, Funkbot, Host="127.0.0.1", Port=10123) -> None:
+    def __init__(self, Host="127.0.0.1", Port=10123) -> None:
+
         self.host=Host
         self.port=Port
-        self.funkbot=Funkbot
+
+        self.funkbot=None
+        self.funkplot=None
 
         print(f"FunkSocket: Host={self.host}:{self.port}")
 
-    def Start(self):
+    def SetFunkBot(self, Funkbot: FunkBot):
+        self.funkbot=Funkbot
 
-        #self.port=10081
-        #self.host="127.0.0.1"
+    def SetFunkPlot(self, Funkplot: FunkPlot):
+        self.funkplot=Funkplot
+
+    def Start(self):
 
         # Info message
         print(f"Starting Socket server {self.host}:{self.port}")
-        
+
+        #self.host="127.0.0.1"
+        #self.port=10081
+
         # Start UDP sever
-        self.server=socketserver.UDPServer((self.host, self.port), FunkHandler, self.funkbot)
+        self.server=socketserver.UDPServer((self.host, self.port), FunkHandler)
 
         with self.server:
             try:
