@@ -101,6 +101,11 @@ class FunkSocket():
         # Start UDP sever
         self.server=socketserver.UDPServer((self.host, self.port), FunkHandler)
 
+        if self.funkbot:
+            self.server.funkbot=self.funkbot
+        if self.funkplot:
+            self.server.funkplot=self.funkplot
+
         with self.server:
             try:
                 self.server.serve_forever()

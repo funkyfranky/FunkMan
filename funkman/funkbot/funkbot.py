@@ -39,7 +39,8 @@ class FunkBot(discord.Client):
         # Set message to channel.
         await self.SendMessage("FunkBot reporting for duty!")
 
-        if True:
+        # Debug tests.
+        if False:
             from funkman.utils.tests import testTrap, testBomb, testStrafe
             from funkman.funkplot.funkplot import FunkPlot
 
@@ -54,8 +55,12 @@ class FunkBot(discord.Client):
             #self.SendFig(f3)
 
     def _Start(self):
-        # start the Discord bot in it's own thread
+        """ Start the Discord bot in it's own thread"""
+
+        # Info message.
         print("Starting threaded discord bot!")
+
+        # Start thread.
         discordThread=threading.Thread(target=self.Start)
         discordThread.start()
 
@@ -75,17 +80,15 @@ class FunkBot(discord.Client):
         """
         Async send text message to channel.
         """
-        channel=self.get_channel(self.channelID)
-        await channel.send(Text)
+        #channel=self.get_channel(self.channelID)
+        await self.channel.send(Text)
 
     def SendText(self, Text: str):
         """
         Send text message to channel using loop.create_task().
         """
-        channel=self.get_channel(self.channelID)
-        print("Getting channel with id"+self.channelID)
         try:
-            self.loop.create_task(channel.send(Text))
+            self.loop.create_task(self.channel.send(Text))
         except:
             print("ERROR: Could not send text!")
 
