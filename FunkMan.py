@@ -4,13 +4,10 @@ FunkMan
 Main code to run the discord bot (FunkBot) and UDP socket server (FunkSocket)
 """
 
-#MTAwNTAwMDA0NDc4MjU2MzQ0MQ.GfFrg2.JtrXWtXAWF3DlzOpK-cYN9Ah_sN7us_36wVbN8
-
 from funkman.funkman import FunkMan
 from funkman.funkbot.funkbot import FunkBot
 from funkman.funksock.funksock import FunkSocket
 from time import sleep
-
 
 if __name__ == "__main__":
 

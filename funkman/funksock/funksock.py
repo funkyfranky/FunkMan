@@ -9,6 +9,9 @@ import socketserver
 import json
 import os
 
+from ..funkplot.funkplot import FunkPlot
+from ..funkbot.funkbot   import FunkBot
+
 class FunkHandler(socketserver.BaseRequestHandler):
     """
     This class works similar to the TCP handler class, except that
@@ -17,10 +20,13 @@ class FunkHandler(socketserver.BaseRequestHandler):
     when sending data back via sendto().
     """
 
-    def __init__(self, request, client_address, server, funkbot) -> None:
+    def __init__(self, request, client_address, server, funkbot: FunkBot, funkplot: FunkPlot) -> None:
+
+        # Init parent class.
         super().__init__(request, client_address, server)
 
         self.funkbot=funkbot
+        self.funkplot=funkplot
 
 
     def handle(self):
@@ -51,15 +57,21 @@ class FunkHandler(socketserver.BaseRequestHandler):
         # Treat different cases.
         if "messageString" in table:
             text=table["messageString"]
-            #sendtext(text)
+            print("Got bomb result!")
             self.funkbot.SendText(text)
         elif "type" in table:
             if table["type"]=="Bomb Result":
                 print("Got bomb result!")
+                fig, ax=self.funkplot.PlotBombRun(table)
+                self.funkbot.SendFig(fig)
             elif table["type"]=="Strafe Result":    
-                print("Got bomb result!")
-            elif table["type"]=="Trap Sheet":
+                print("Got strafe result!")
+                fig, ax=self.funkplot.PlotStrafeRun(table)
+                self.funkbot.SendFig(fig)
+            elif table["type"]=="Trap Sheet":                
                 print("Got trap sheet!")
+                fig, ax=self.funkplot.PlotTrapSheet(table)
+                self.funkbot.SendFig(fig)
             else:
                 print("ERROR: Unknown type in table!")
         else:
@@ -84,7 +96,6 @@ class FunkSocket():
         
         # Start UDP sever
         self.server=socketserver.UDPServer((self.host, self.port), FunkHandler, self.funkbot)
-        #self.server=socketserver.UDPServer(("127.0.0.1", 10081), FunkHandler, self.funkbot)
 
         with self.server:
             try:
