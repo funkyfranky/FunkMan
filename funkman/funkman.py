@@ -50,6 +50,8 @@ class FunkMan():
 
         # Set Plot.
         self.funksock.SetFunkPlot(self.funkplot)
+
+        self.funksock.SetChannelIdMessage(self.channelID)
         
 
     def Start(self):
@@ -93,7 +95,7 @@ def _ReadConfig(funkman: FunkMan) -> None:
     funkman.port=int(config[SectionName]['PORT'])
     funkman.host=str(config[SectionName]['HOST'])
     funkman.token=config[SectionName]['TOKEN']
-    funkman.channelID=int(config[SectionName]['CHANNELID'])
+    funkman.channelID=int(config[SectionName]['CHANNELID_MAIN'])
 
     # Debug message.
     text =str(f"------------------------------------")

@@ -50,24 +50,24 @@ class FunkHandler(socketserver.BaseRequestHandler):
         if "messageString" in table:
             text=table["messageString"]
             print("Got text message!")
-            funkbot.SendText(text)
+            funkbot.SendText(text, self.server.channelIDmessage)
         elif "type" in table:
             if table["type"]=="Bomb Result":
                 print("Got bomb result!")
                 fig, ax=funkplot.PlotBombRun(table)
-                funkbot.SendFig(fig)
+                funkbot.SendFig(fig, self.server.channelIDrange)
             elif table["type"]=="Strafe Result":    
                 print("Got strafe result!")
                 fig, ax=funkplot.PlotStrafeRun(table)
-                funkbot.SendFig(fig)
+                funkbot.SendFig(fig, self.server.channelIDrange)
             elif table["type"]=="Trap Sheet":                
                 print("Got trap sheet!")
                 fig, ax=funkplot.PlotTrapSheet(table)
-                funkbot.SendFig(fig)
+                funkbot.SendFig(fig, self.server.channelIDairboss)
             else:
                 print("ERROR: Unknown type in table!")
         else:
-            print("Unknown message type!")        
+            print("Unknown message type!")
 
 class FunkSocket():
     """
@@ -89,6 +89,15 @@ class FunkSocket():
 
     def SetFunkPlot(self, Funkplot: FunkPlot):
         self.funkplot=Funkplot
+
+    def SetChannelIdMessage(self, ChannelID):
+        self.setchannelIDmessage=ChannelID
+
+    def SetChannelIdRange(self, ChannelID):
+        self.setchannelIDrange=ChannelID
+
+    def SetChannelIdAirboss(self, ChannelID):
+        self.setchannelIDairboss=ChannelID
 
     def Start(self):
 

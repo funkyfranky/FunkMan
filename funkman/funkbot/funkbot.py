@@ -37,7 +37,7 @@ class FunkBot(discord.Client):
         print('Connected as {0.name} [ID: {0.id}]'.format(self.user))
 
         # Set message to channel.
-        await self.SendMessage("FunkBot reporting for duty!")
+        await self.SendMessage("FunkBot reporting for duty!", self.channelID)
 
         # Debug tests.
         if False:
@@ -76,29 +76,31 @@ class FunkBot(discord.Client):
             print(f"Starting Bot Client with Token {self.token}")
             self.run(self.token)
 
-    async def SendMessage(self, Text: str):
+    async def SendMessage(self, Text: str, ChannelID: int):
         """
         Async send text message to channel.
         """
-        #channel=self.get_channel(self.channelID)
-        await self.channel.send(Text)
+        channel=self.get_channel(ChannelID)
+        await channel.send(Text)
 
-    def SendText(self, Text: str):
+    def SendText(self, Text: str, ChannelID: int):
         """
         Send text message to channel using loop.create_task().
         """
+        channel=self.get_channel(ChannelID)
         try:
-            self.loop.create_task(self.channel.send(Text))
+            self.loop.create_task(channel.send(Text))
         except:
             print("ERROR: Could not send text!")
 
-    def SendDiscordFile(self, DiscordFile: discord.File):
+    def SendDiscordFile(self, DiscordFile: discord.File, ChannelID: int):
         """
         Send discord file.
         """
-        self.loop.create_task(self.channel.send(file=DiscordFile))
+        channel=self.get_channel(ChannelID)
+        self.loop.create_task(channel.send(file=DiscordFile))
 
-    def SendIO(self, DataStream: io.BytesIO):
+    def SendIO(self, DataStream: io.BytesIO, ChannelID: int):
         """
         Send text message to channel using loop.create_task().
         """
@@ -110,11 +112,11 @@ class FunkBot(discord.Client):
             file= discord.File(DataStream, filename="funkbot.png", spoiler=False)
             
             # Send discord file.
-            self.SendDiscordFile(file)
+            self.SendDiscordFile(file, ChannelID)
         except:
             print("ERROR: Could not send text!")
 
-    def SendFig(self, fig):
+    def SendFig(self, fig, ChannelID: int):
         """
         Set matplotlib fig object.
         """
@@ -130,4 +132,4 @@ class FunkBot(discord.Client):
         plt.close(fig)
 
         # Send data stream.
-        self.SendIO(data_stream)
+        self.SendIO(data_stream, ChannelID)
