@@ -31,7 +31,9 @@ class FunkMan():
         self.port=None
         self.host=None
         self.token=None
-        self.channelID=None
+        self.channelIDmain=None
+        self.channelIDrange=None
+        self.channelIDairboss=None
 
         # Read config file.
         _ReadConfig(self)
@@ -40,7 +42,7 @@ class FunkMan():
         self.funkplot=FunkPlot()
 
         # Create funkbot instance.
-        self.funkbot=FunkBot(self.token, self.channelID)
+        self.funkbot=FunkBot(self.token, self.channelIDmain)
 
         # Create funksocket instance.
         self.funksock=FunkSocket(Host=self.host, Port=self.port)
@@ -51,7 +53,12 @@ class FunkMan():
         # Set Plot.
         self.funksock.SetFunkPlot(self.funkplot)
 
-        self.funksock.SetChannelIdMessage(self.channelID)
+        # Set message channel ID.
+        self.funksock.SetChannelIdMessage(self.channelIDmain)
+
+        self.funksock.SetChannelIdRange(self.channelIDrange)
+
+        self.funksock.SetChannelIdAirboss(self.channelIDairboss)
         
 
     def Start(self):
@@ -95,14 +102,18 @@ def _ReadConfig(funkman: FunkMan) -> None:
     funkman.port=int(config[SectionName]['PORT'])
     funkman.host=str(config[SectionName]['HOST'])
     funkman.token=config[SectionName]['TOKEN']
-    funkman.channelID=int(config[SectionName]['CHANNELID_MAIN'])
+    funkman.channelIDmain=int(config[SectionName]['CHANNELID_MAIN'])
+    funkman.channelIDrange=int(config[SectionName]['CHANNELID_RANGE'])
+    funkman.channelIDairboss=int(config[SectionName]['CHANNELID_AIRBOSS'])
 
     # Debug message.
     text =str(f"------------------------------------")
     text+=str(f"\nReading config file:")
-    text+=str(f"\nPort={funkman.port}")
-    text+=str(f"\nHost={funkman.host}")
-    text+=str(f"\nToken={funkman.token}")
-    text+=str(f"\nChannel={funkman.channelID}")
+    text+=str(f"\nHost            = {funkman.host}")
+    text+=str(f"\nPort            = {funkman.port}")    
+    text+=str(f"\nToken           = {funkman.token}")
+    text+=str(f"\nChannel Main    = {funkman.channelIDmain}")
+    text+=str(f"\nChannel Range   = {funkman.channelIDrange}")
+    text+=str(f"\nChannel Airboss = {funkman.channelIDairboss}")
     text+=str(f"\n------------------------------------")
     print(text)

@@ -78,11 +78,11 @@ def testTrap(funkplot):
         # Create playerData table. This will come from the FSM event.
     playerData={
         "trapsheet": ts,
-        "actype": 'FA-18C_hornet', #AircraftType.HORNET.value,
+        "airframe": 'FA-18C_hornet',
         "Tgroove": 15,
         "case": 1,
         "grade": grade,
-        "runwayangle": -9.0,
+        "carrierrwy": -9.0,
         "name": "funkyfranky",
     }
 

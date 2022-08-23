@@ -210,6 +210,8 @@ class FunkPlot():
         roundsFired=_GetVal(result, "roundsFired", 1)
         roundsHit=_GetVal(result, "roundsHit", 0)
 
+        print(f"Plotting Strafe Run for player {player}!")
+
         # Create subplot figure.
         fig, ax = plt.subplots(1, 1, facecolor=PlotColor.FACE.value, sharex=True, dpi=150)
 
@@ -276,23 +278,44 @@ class FunkPlot():
 
         #ax.text(0.6, 0.7, "Invalid", size=50, rotation=30., ha="center", va="center", bbox=dict(boxstyle="round", ec=(1., 0.5, 0.5), fc=(1., 0.8, 0.8),))
 
-
         return fig, ax
 
 
-    def PlotTrapSheet(self, playerData):
+    def PlotTrapSheet(self, playerData, Grade):
         """
         Creates trapsheet figure for a given player data table.
         """
 
         # Trapsheet data.
-        ts=_GetVal(playerData, "trapsheet")
+        trapsheet=playerData["trapsheet"]
 
-        actype=_GetVal(playerData, "actype", "Unkown")
+        l=len(trapsheet)
+
+        X=np.empty(l, dtype=float)
+        Y=np.empty(l, dtype=float)
+        AOA=np.empty(l, dtype=float)
+        ALT=np.empty(l, dtype=float)
+
+        for ts in trapsheet:
+            np.append(X, ts["X"])
+            np.append(Y, ts["Z"])
+            np.append(AOA, ts["AoA"])
+            np.append(ALT, ts["Alt"])
+
+        actype=_GetVal(playerData, "airframe", "Unkown")
         Tgroove=_GetVal(playerData, "Tgroove", "?")
 
+        print("FF actype")
+        print(actype)
+
+        carriertype=_GetVal(Grade, "Tgroove", "?")
+        windondeck=_GetVal(Grade, "wind", "?")
+        missiontime=_GetVal(Grade, "mitime", "?")
+        missiondate=_GetVal(Grade, "midate", "?")
+        theatre=_GetVal(Grade, "theatre", "?")
+
         # Angled runway.
-        theta=_GetVal(playerData, "runwayangle", -9)
+        theta=_GetVal(Grade, "carrierrwy", -9)
 
         if abs(theta)>0.1:
             angledRunway=True
@@ -314,12 +337,12 @@ class FunkPlot():
 
         # Rotation matrix.
         rotMatrix = np.array([[np.cos(theta), -np.sin(theta)],
-                            [ np.sin(theta),  np.cos(theta)]])
+                              [np.sin(theta),  np.cos(theta)]])
 
         # X-Y array in NM
         dx = 20
         dy = 20
-        xy = np.array([ts['X']+dx, ts['Z']+dy])/1852
+        xy = np.array([X+dx, Y+dy])/1852
 
         # Rotate grid
         xy = np.dot(rotMatrix, xy)
@@ -380,10 +403,10 @@ class FunkPlot():
         ax.plot(m1, m2, PlotColor.REFERENCE.value, linewidth=2, alpha=0.8)
 
         # Plot lineup with glow.
-        ax.plot(xy[0], -feet*xy[1], 'g',  linewidth=16, alpha=0.10)
-        ax.plot(xy[0], -feet*xy[1], 'g',  linewidth=10, alpha=0.10)
-        ax.plot(xy[0], -feet*xy[1], 'g',  linewidth=6,  alpha=0.15) 
-        ax.plot(xy[0], -feet*xy[1], 'w-', linewidth=1,  alpha=0.45)
+        ax.plot(X, -feet*Y, 'g',  linewidth=16, alpha=0.10)
+        ax.plot(X, -feet*Y, 'g',  linewidth=10, alpha=0.10)
+        ax.plot(X, -feet*Y, 'g',  linewidth=6,  alpha=0.15) 
+        ax.plot(X, -feet*Y, 'w-', linewidth=1,  alpha=0.45)
 
         # Add text "Lineup"
         ax.text(xpoint, 510, "Lineup", color=PlotColor.LABEL.value, fontsize=xpointsize, alpha=0.5)
@@ -411,10 +434,10 @@ class FunkPlot():
         ax.plot(X+gx, zt+gz, PlotColor.REFERENCE.value, linewidth=1.1, alpha=1)
 
         # Actual data with glow.
-        ax.plot(X, ts['Alt']+gz+20, 'b',  linewidth=8, alpha=0.1)   #"glow" effect arond the glideslope line
-        ax.plot(X, ts['Alt']+gz+20, 'b',  linewidth=5, alpha=0.1)   #"glow" effect arond the glideslope line
-        ax.plot(X, ts['Alt']+gz+20, 'b',  linewidth=3, alpha=0.15)  #"glow" effect arond the glideslope line
-        ax.plot(X, ts['Alt']+gz+20, 'w-', linewidth=1, alpha=0.45)  #"glow" effect arond the glideslope line
+        ax.plot(X, ALT+gz+20, 'b',  linewidth=8, alpha=0.1)   #"glow" effect arond the glideslope line
+        ax.plot(X, ALT+gz+20, 'b',  linewidth=5, alpha=0.1)   #"glow" effect arond the glideslope line
+        ax.plot(X, ALT+gz+20, 'b',  linewidth=3, alpha=0.15)  #"glow" effect arond the glideslope line
+        ax.plot(X, ALT+gz+20, 'w-', linewidth=1, alpha=0.45)  #"glow" effect arond the glideslope line
 
         # Add text.
         ax.text(xpoint, 410, "Glide Slope", color=PlotColor.LABEL.value, fontsize=xpointsize, alpha=0.5)
@@ -429,7 +452,7 @@ class FunkPlot():
         ax.set_xlabel("Distance [Nautical Miles]")
 
         # AoA values. We skip the last values before the landing.
-        AoA=ts['AoA'][:-num_aoa]
+        AoA=AOA[:-num_aoa]
 
         # Get AC specific AoA values.
         AoAmin, AoAopt, AoAmax=self._GetAoA(actype)
@@ -452,10 +475,10 @@ class FunkPlot():
         ax.text(xpoint, AoAmax*1.05, "AoA", color=PlotColor.LABEL.value, fontsize=xpointsize, alpha=0.5)
 
         # Plot AoA line with glow effect.
-        ax.plot(xy[0][:-num_aoa],ts['AoA'][:-num_aoa], 'g-', linewidth=8, alpha=0.10)
-        ax.plot(xy[0][:-num_aoa],ts['AoA'][:-num_aoa], 'g-', linewidth=5, alpha=0.10)
-        ax.plot(xy[0][:-num_aoa],ts['AoA'][:-num_aoa], 'g-', linewidth=3, alpha=0.15)
-        ax.plot(xy[0][:-num_aoa],ts['AoA'][:-num_aoa], 'w-', linewidth=1, alpha=0.45)
+        ax.plot(X[:-num_aoa], AoA, 'g-', linewidth=8, alpha=0.10)
+        ax.plot(X[:-num_aoa], AoA, 'g-', linewidth=5, alpha=0.10)
+        ax.plot(X[:-num_aoa], AoA, 'g-', linewidth=3, alpha=0.15)
+        ax.plot(X[:-num_aoa], AoA, 'w-', linewidth=1, alpha=0.45)
 
 
         """
@@ -485,8 +508,7 @@ class FunkPlot():
         """
         Title
         """
-        player=_GetVal(playerData, "name", "Ghostrider")
-        Grade=_GetVal(playerData, "grade", "?")
+        player=_GetVal(playerData, "name", "Ghostrider")        
         grade=_GetVal(Grade, "finalscore", "?")
         points=_GetVal(Grade, "points", "?")
         details=_GetVal(Grade, "details")

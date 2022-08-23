@@ -11,6 +11,7 @@ import os
 
 from ..funkplot.funkplot import FunkPlot
 from ..funkbot.funkbot   import FunkBot
+from ..utils.utils       import _GetVal
 
 class FunkHandler(socketserver.BaseRequestHandler):
     """
@@ -31,50 +32,29 @@ class FunkHandler(socketserver.BaseRequestHandler):
         # Table data.
         table=json.loads(data)
 
-        if True:
+        if False:
             print("Table from JSON:")
-            print(table)
-            print("---------------")
-            print(data.decode('utf-8'))
-            print("---------------")
-            print(json.dumps(table, indent=4, sort_keys=True))
+            #print(table)
+            #print("---------------")
+            #print(data.decode('utf-8'))
+            #print("---------------")
+            print(json.dumps(table, indent=2, sort_keys=True))
             print("---------------")
 
         # Evaluate table data.
-        self.EvalTable(table, self.server.funkbot, self.server.funkplot)
+        #self.EvalTable(table, self.server.funkbot, self.server.funkplot)
 
-    def EvalTable(self, table, funkbot: FunkBot, funkplot: FunkPlot):
-        """Evaluate table."""
+        self.server.EvalData(table)
 
-        # Treat different cases.
-        if "messageString" in table:
-            text=table["messageString"]
-            print("Got text message!")
-            funkbot.SendText(text, self.server.channelIDmessage)
-        elif "type" in table:
-            if table["type"]=="Bomb Result":
-                print("Got bomb result!")
-                fig, ax=funkplot.PlotBombRun(table)
-                funkbot.SendFig(fig, self.server.channelIDrange)
-            elif table["type"]=="Strafe Result":    
-                print("Got strafe result!")
-                fig, ax=funkplot.PlotStrafeRun(table)
-                funkbot.SendFig(fig, self.server.channelIDrange)
-            elif table["type"]=="Trap Sheet":                
-                print("Got trap sheet!")
-                fig, ax=funkplot.PlotTrapSheet(table)
-                funkbot.SendFig(fig, self.server.channelIDairboss)
-            else:
-                print("ERROR: Unknown type in table!")
-        else:
-            print("Unknown message type!")
 
-class FunkSocket():
+class FunkSocket(socketserver.UDPServer):
     """
-    UDP socket server.
+    UDP socket server. It inherits "socketserver.UDPServer".
     """
 
     def __init__(self, Host="127.0.0.1", Port=10123) -> None:
+
+        super().__init__((Host, Port), FunkHandler)
 
         self.host=Host
         self.port=Port
@@ -85,39 +65,84 @@ class FunkSocket():
         print(f"FunkSocket: Host={self.host}:{self.port}")
 
     def SetFunkBot(self, Funkbot: FunkBot):
+        """Set the FunkBot instance."""
         self.funkbot=Funkbot
 
     def SetFunkPlot(self, Funkplot: FunkPlot):
+        """Set the FunkPlot instance."""
         self.funkplot=Funkplot
 
     def SetChannelIdMessage(self, ChannelID):
-        self.setchannelIDmessage=ChannelID
+        """Set channel ID for text messages."""
+        self.channelIDmessage=ChannelID
 
     def SetChannelIdRange(self, ChannelID):
-        self.setchannelIDrange=ChannelID
+        """Set channel ID for Range figures."""
+        self.channelIDrange=ChannelID
 
     def SetChannelIdAirboss(self, ChannelID):
-        self.setchannelIDairboss=ChannelID
+        """Set channel ID for Airboss."""
+        self.channelIDairboss=ChannelID
 
     def Start(self):
 
         # Info message
         print(f"Starting Socket server {self.host}:{self.port}")
 
-        #self.host="127.0.0.1"
-        #self.port=10081
+        try:
+            self.serve_forever()
+        except:
+            print('Keyboard Control+C exception detected, quitting.')
+            os._exit(0)
 
-        # Start UDP sever
-        self.server=socketserver.UDPServer((self.host, self.port), FunkHandler)
 
-        if self.funkbot:
-            self.server.funkbot=self.funkbot
-        if self.funkplot:
-            self.server.funkplot=self.funkplot
+    def EvalData(self, table):
+        """Evaluate data received from socket."""
 
-        with self.server:
-            try:
-                self.server.serve_forever()
-            except:
-                print('Keyboard Control+C exception detected, quitting.')
-                os._exit(0)
+        # Treat different cases.
+        if "messageString" in table:
+            print("Got text message!")
+
+            # Extract text.
+            text=table["messageString"]            
+
+            # Send text to Discord.
+            self.funkbot.SendText(text, self.channelIDmessage)
+
+        elif "type" in table:
+
+            if table["type"]=="Bomb Result":
+                print("Got bomb result!")
+
+                # Create bomb run figure.
+                fig, ax=self.funkplot.PlotBombRun(table)
+
+                # Send figure to Discord.
+                self.funkbot.SendFig(fig, self.channelIDrange)
+
+            elif table["type"]=="Strafe Result":
+                print("Got strafe result!")
+
+                # Create strafe run figure.
+                fig, ax=self.funkplot.PlotStrafeRun(table)
+
+                # Send figure to discord.
+                self.funkbot.SendFig(fig, self.channelIDrange)
+
+            elif table["type"]=="Trap Sheet":
+                print("Got trap sheet!")
+
+                # Grade table.
+                Grade=_GetVal(table, "grade", "?")
+
+                # Create trap sheet figure.
+                fig, ax=self.funkplot.PlotTrapSheet(table, Grade)
+
+                # Send figure to Discord.
+                self.funkbot.SendFig(fig, self.channelIDairboss)
+
+            else:
+                print("ERROR: Unknown type in table!")
+        else:
+            print("Unknown message type!")
+            print(table)
