@@ -87,6 +87,9 @@ class FunkPlot():
             return AircraftType.TOMCATA.getAoA
         elif actype==AircraftType.TOMCATB.value:
             return AircraftType.TOMCATB.getAoA
+        else:
+            print("WARNING: Unknown aircraft type! Taking generic AoA values")
+            return 5,10,15
 
     def _Polar2Cart(self, r, phi):
         """
@@ -287,26 +290,28 @@ class FunkPlot():
         """
 
         # Trapsheet data.
-        trapsheet=playerData["trapsheet"]
+        try:
+            trapsheet=playerData["trapsheet"]
+        except:
+            print("ERROR: Trap sheet data does not exist!")
+            return
 
-        l=len(trapsheet)
+        # Length of trap sheet.
+        lts=len(trapsheet)
 
-        X=np.empty(l, dtype=float)
-        Y=np.empty(l, dtype=float)
-        AOA=np.empty(l, dtype=float)
-        ALT=np.empty(l, dtype=float)
+        if lts==0:
+            print("ERROR: Trap sheet is empty!")
+            return
 
+        X=[] ; Y=[] ; AOA=[] ; ALT=[]
         for ts in trapsheet:
-            np.append(X, ts["X"])
-            np.append(Y, ts["Z"])
-            np.append(AOA, ts["AoA"])
-            np.append(ALT, ts["Alt"])
-
+            X.append(ts["X"])
+            Y.append(ts["Z"])
+            AOA.append(ts["AoA"])
+            ALT.append(ts["Alt"])
+ 
         actype=_GetVal(playerData, "airframe", "Unkown")
         Tgroove=_GetVal(playerData, "Tgroove", "?")
-
-        print("FF actype")
-        print(actype)
 
         carriertype=_GetVal(Grade, "Tgroove", "?")
         windondeck=_GetVal(Grade, "wind", "?")
@@ -353,9 +358,10 @@ class FunkPlot():
         # Create subplot figure and axes.
         fig, axs = plt.subplots(3, 1, sharex=True, facecolor=PlotColor.FACE.value, dpi=150)
 
-        # Set matplotlib backend.
+        # Set figure size. Needed to have the carrier images in the right place!
         fig.set_size_inches(8, 6)
 
+        # Set matplotlib backend.
         #matplotlib.use('Agg')
         #plt.ioff()
 
@@ -508,7 +514,7 @@ class FunkPlot():
         """
         Title
         """
-        player=_GetVal(playerData, "name", "Ghostrider")        
+        player=_GetVal(playerData, "name", "Ghostrider")
         grade=_GetVal(Grade, "finalscore", "?")
         points=_GetVal(Grade, "points", "?")
         details=_GetVal(Grade, "details")

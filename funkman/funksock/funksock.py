@@ -27,7 +27,7 @@ class FunkHandler(socketserver.BaseRequestHandler):
         data = self.request[0].strip()
 
         # Debug message.
-        print("{} new message from server: ".format(self.client_address[0]))
+        print(f"New message from server {self.client_address[0]}")
 
         # Table data.
         table=json.loads(data)
@@ -42,8 +42,6 @@ class FunkHandler(socketserver.BaseRequestHandler):
             print("---------------")
 
         # Evaluate table data.
-        #self.EvalTable(table, self.server.funkbot, self.server.funkplot)
-
         self.server.EvalData(table)
 
 
@@ -85,8 +83,9 @@ class FunkSocket(socketserver.UDPServer):
         self.channelIDairboss=ChannelID
 
     def Start(self):
+        """Start socket server."""
 
-        # Info message
+        # Info message.
         print(f"Starting Socket server {self.host}:{self.port}")
 
         try:
@@ -97,7 +96,7 @@ class FunkSocket(socketserver.UDPServer):
 
 
     def EvalData(self, table):
-        """Evaluate data received from socket."""
+        """Evaluate data received from socket. You might want to overwrite this function."""
 
         # Treat different cases.
         if "messageString" in table:
@@ -134,6 +133,9 @@ class FunkSocket(socketserver.UDPServer):
 
                 # Grade table.
                 Grade=_GetVal(table, "grade", "?")
+
+                print("Grade:")
+                print(Grade)
 
                 # Create trap sheet figure.
                 fig, ax=self.funkplot.PlotTrapSheet(table, Grade)
