@@ -2,93 +2,97 @@
 Test cases.
 """
 
+from random import randint
 import matplotlib.pyplot as plt
 from ..funkplot.funkplot import FunkPlot
 
 def testStrafe(funkplot: FunkPlot):
+
+    Nfired=randint(1, 500)
+    Nhit=randint(0, Nfired)
 
     # Strafe result.
     resultStrave = {
     "type": "Strafe Result",
     "player": "funkyfranky",
     "name": "My Target",
-    "clock": "9:45",
-    "roundsFired": 500,
-    "roundsHit": 100,
-    "roundsQuality": "Quality",
-    "strafeAccuracy": "10",
+    "clock": "9:45:01",
+    "midate": "2022-04-01",
+    "roundsFired": Nfired,
+    "roundsHit": Nhit,
+    "roundsQuality": "Some Quality",
+    "strafeAccuracy": Nhit/Nfired*100,
     "rangename": "My Range",
     "airframe": "F/A-18C_hornet",
-    "invalid": "true",
+    "invalid": "false",
     }
 
-    print("Testing BombRun plot")
+    print("Testing StrafeRun plot")
 
+    # Create figuire.
     fig, ax=funkplot.PlotStrafeRun(resultStrave)
-    plt.show()
 
     return fig, ax
 
-def testBomb(funkplot):
+def testBomb(funkplot: FunkPlot):
 
     # Bomb run result
     resultBomb = {
     "type": "Bomb Result",
     "name": "Target Name",
-    "distance": 100,
-    "radial": 37,
+    "distance": randint(5,300),
+    "radial": randint(1,360),
     "weapon": "Mk 82",
     "quality": "Ineffective",
     "player": "funkyfranky",
     "clock": "8:02",
-    #"airframe": "F/A-18C_hornet",
+    "airframe": "F/A-18C_hornet",
     "rangename": "My Range Name",
-    "attackHdg": 45,
-    "attackVel": 300,
-    "attackAlt": 16467,
+    "attackHdg": randint(1,360),
+    "attackVel": randint(250, 400),
+    "attackAlt": randint(6000, 12000),
+    "theater": "Caucasus"
     }     
 
+    # Debug info.
     print("Testing BombRun plot")
 
+    # Create figure.
     fig, ax=funkplot.PlotBombRun(resultBomb)
-    plt.show()
 
     return fig, ax
 
-def testTrap(funkplot):
+def testTrap(funkplot: FunkPlot):
 
     # Test template file.
     trapfile="D:/AIRBOSS-CVN-71_Trapsheet-New callsign_FA-18C_hornet-0006.csv"
 
     # Read trapsheet from disk for testing.
-    ts = funkplot.ReadTrapsheet(trapfile)
+    trapsheet=funkplot.ReadTrapsheet(trapfile)
 
-    grade={
+    result={
+        "name":"funkyfranky",
+        "trapsheet": trapsheet,
         "airframe": 'FA-18C_hornet',
+        "mitime": "05:00:01",
+        "midate":"2022-04-01",
+        "wind": 25,
+        "carriertype": "CVN-74",
         "carriername": "USS Stennis",
-        "carrierType": "CVN-74",
-        "case": 3,
+        "carrierrwy": -9,
+        "theatre": "Kola",
+        "Tgroove": randint(10, 20),
+        "wire": randint(1,4),
+        "case": randint(1,3),
         "finalscore": "OK",
-        "points": 4,
-        "details": "LUL",
-        "wire": 3,
-        "Tgroove": 15,
+        "points": 3,
+        "details": "LUL"
     }
+    
+    # Debug info.
+    print("Testing TrapSheet plot")
 
-        # Create playerData table. This will come from the FSM event.
-    playerData={
-        "trapsheet": ts,
-        "airframe": 'FA-18C_hornet',
-        "Tgroove": 15,
-        "case": 1,
-        "grade": grade,
-        "carrierrwy": -9.0,
-        "name": "funkyfranky",
-    }
-
-    print("Testing trapsheet plot")
-
-    fig, axs=funkplot.PlotTrapSheet(playerData)
-    plt.show()
+    # Create figure.
+    fig, axs=funkplot.PlotTrapSheet(result)
 
     return fig, axs

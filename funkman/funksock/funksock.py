@@ -103,7 +103,7 @@ class FunkSocket(socketserver.UDPServer):
             print("Got text message!")
 
             # Extract text.
-            text=table["messageString"]            
+            text=table["messageString"]
 
             # Send text to Discord.
             self.funkbot.SendText(text, self.channelIDmessage)
@@ -131,14 +131,8 @@ class FunkSocket(socketserver.UDPServer):
             elif table["type"]=="Trap Sheet":
                 print("Got trap sheet!")
 
-                # Grade table.
-                Grade=_GetVal(table, "grade", "?")
-
-                print("Grade:")
-                print(Grade)
-
                 # Create trap sheet figure.
-                fig, ax=self.funkplot.PlotTrapSheet(table, Grade)
+                fig, ax=self.funkplot.PlotTrapSheet(table)
 
                 # Send figure to Discord.
                 self.funkbot.SendFig(fig, self.channelIDairboss)

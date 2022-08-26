@@ -10,7 +10,7 @@ import matplotlib
 import math
 import numpy as np
 import csv
-import datetime
+from datetime import datetime
 from enum import Enum
 from ..utils.utils import _GetVal
 
@@ -122,8 +122,13 @@ class FunkPlot():
         attackHdg=_GetVal(result, "attackHdg", 0)
         attackAlt=_GetVal(result, "attackAlt", "?")
         attackVel=_GetVal(result, "attackVel", "?")
-        
 
+        # Mission info.
+        theatre=_GetVal(result, "theatre", "Unknown Map")
+        missiontime=_GetVal(result, "clock", "?")
+        missiondate=_GetVal(result, "midate", "?")
+        
+        # Try to figure out if the impact was long, short, left, right.
         dphi=radial-attackHdg
         if dphi>=-45 and dphi<45:
             pass
@@ -149,6 +154,8 @@ class FunkPlot():
 
         # Set title.
         fig.suptitle(title, fontsize=12, color=PlotColor.LABEL.value)
+
+        fig.set_size_inches(8, 6)
 
         # Set background color.
         ax.set_facecolor(PlotColor.FACE.value)
@@ -181,22 +188,34 @@ class FunkPlot():
         # Plot grid.
         plt.grid(axis='both', color='red', alpha=0.3)
 
-        # Annotation box with weapon data.
-        offsetbox = TextArea(f'{_GetVal(result, "weapon")}\nr={distance} m\n$\phi$={radial}°\n{_GetVal(result, "quality", "?")}')
+        # Annotation box with attack data.
+        offsetbox = TextArea(f'{_GetVal(result, "airframe", "Unknown AC")}\nh={attackAlt} ft\n$v$={attackVel} kts\n$\psi$={attackHdg}°',
+        textprops=dict(color="green", backgroundcolor=PlotColor.FACE.value))
         ab = AnnotationBbox(offsetbox, (x, y),
-                            xybox=(zmax+50, -zmax/2),
+                            xybox=(0.9, 0.8),
+                            xycoords='figure fraction',
+                            boxcoords="figure fraction", #, box_alignment=(1.1, 1.1))
+                            bboxprops =dict(boxstyle="round, pad=0.6", fc=PlotColor.FACE.value, ec="green", lw=1.2))
+        ax.add_artist(ab)
+
+        # Annotation box with weapon data.
+        offsetbox = TextArea(f'{_GetVal(result, "weapon")}\nr={distance} m\n$\phi$={radial}°\n{_GetVal(result, "quality", "?")}',
+        textprops=dict(color="crimson", backgroundcolor=PlotColor.FACE.value))
+        ab = AnnotationBbox(offsetbox, (x, y),
+                            xybox=(0.9, 0.3),
                             xycoords='data',
-                            boxcoords="data",
+                            boxcoords="figure fraction",
+                            bboxprops =dict(boxstyle="round, pad=0.6", fc=PlotColor.FACE.value, ec="crimson", lw=1.2),
                             arrowprops=dict(arrowstyle="->"))
         ax.add_artist(ab)
 
-        # Annotation box with attack data.
-        offsetbox = TextArea(f'{_GetVal(result, "airframe", "Unknown AC")}\nh={attackAlt} ft\n$v$={attackVel} kts\n$\psi$={attackHdg}°')
-        ab = AnnotationBbox(offsetbox, (x, y),
-                            xybox=(zmax+50, zmax-50),
-                            xycoords='data',
-                            boxcoords="data")
-        ax.add_artist(ab)
+        # Mission date at left bottom
+        timestamp=str(f"{theatre}: {missiondate} ({missiontime})")
+        plt.annotate(timestamp, xy=(0, 0), xycoords='figure fraction', alpha=0.5, color="grey", horizontalalignment='left', verticalalignment="bottom")
+
+        # Real date at right bottom.
+        timestamp = datetime.now().strftime(f"%Y-%b-%d (%H:%M:%S)")
+        plt.annotate(timestamp, xy=(1, 0.0), xycoords='figure fraction', alpha=0.5, color="grey", horizontalalignment='right', verticalalignment="bottom")
 
         return fig, ax
 
@@ -212,7 +231,14 @@ class FunkPlot():
 
         roundsFired=_GetVal(result, "roundsFired", 1)
         roundsHit=_GetVal(result, "roundsHit", 0)
+        invalid=_GetVal(result, "invalid", False)
 
+        # Mission info.
+        theatre=_GetVal(result, "theatre", "Unknown Map")
+        missiontime=_GetVal(result, "clock", "?")
+        missiondate=_GetVal(result, "midate", "?")
+
+        # Debug info.
         print(f"Plotting Strafe Run for player {player}!")
 
         # Create subplot figure.
@@ -220,6 +246,9 @@ class FunkPlot():
 
         # Set face color.
         ax.set_facecolor(PlotColor.FACE.value)
+
+        # Set size of figure.
+        fig.set_size_inches(8, 6)
 
         # Create title.
         title=str(f"Strafing result of {player} [{actype}]")
@@ -267,31 +296,49 @@ class FunkPlot():
             ax.plot(x, y, "bX", zorder=15, alpha=0.5)
 
 
+        Nfired=_GetVal(result, "roundsFired", "?")
+        Nhits=_GetVal(result, "roundsHit", "?")
+        Accu=Nhits/max(Nfired,1)*100
+        Qual=_GetVal(result, "roundsQuality", "?")
+
         # Annotation box with weapon data.
-        text=str(f'Fired: {_GetVal(result, "roundsFired", "?")}\nHits: {_GetVal(result, "roundsHit", "?")}\nAccu={_GetVal(result, "strafeAccuracy", "?")}%\n{_GetVal(result, "roundsQuality", "?")}')
-        ab = AnnotationBbox(TextArea(text), 
+        text=str(f'Fired: {Nfired}\nHits: {Nhits}\nAccu={Accu:.1f}%\n{Qual}')
+        offsetbox = TextArea(text, textprops=dict(color="green", backgroundcolor=PlotColor.FACE.value))
+        ab = AnnotationBbox(offsetbox,
                             (x, y),
                             xybox=(zmax, -zmax/2),
                             xycoords='data',
-                            boxcoords="data", zorder=1000)
+                            boxcoords="data",
+                            bboxprops =dict(boxstyle="round, pad=0.6", fc=PlotColor.FACE.value, ec="green", lw=1.2),
+                            zorder=1000)
         ax.add_artist(ab)
 
-        ax.text(0.5, 0.35, '*** INVALID ***', va='bottom', ha='center', transform=ax.transAxes, color='red', fontsize=25, zorder=5000,
-        bbox=dict(boxstyle="round", ec="red", fc="red", alpha=0.5,), rotation=30)
+        # Invalid runs.
+        if invalid:
+            ax.text(0.5, 0.35, '*** INVALID ***', va='bottom', ha='center', transform=ax.transAxes, color='red', fontsize=25, zorder=5000,
+            bbox=dict(boxstyle="round", ec="red", fc="red", alpha=0.5,), rotation=30)
 
         #ax.text(0.6, 0.7, "Invalid", size=50, rotation=30., ha="center", va="center", bbox=dict(boxstyle="round", ec=(1., 0.5, 0.5), fc=(1., 0.8, 0.8),))
+
+        # Mission date at left bottom
+        timestamp=str(f"{theatre}: {missiondate} ({missiontime})")
+        plt.annotate(timestamp, xy=(0, 0), xycoords='figure fraction', alpha=0.5, color="grey", horizontalalignment='left', verticalalignment="bottom")
+
+        # Real date at right bottom.
+        timestamp = datetime.now().strftime(f"%Y-%b-%d (%H:%M:%S)")
+        plt.annotate(timestamp, xy=(1, 0.0), xycoords='figure fraction', alpha=0.5, color="grey", horizontalalignment='right', verticalalignment="bottom")
 
         return fig, ax
 
 
-    def PlotTrapSheet(self, playerData, Grade):
+    def PlotTrapSheet(self, result):
         """
         Creates trapsheet figure for a given player data table.
         """
 
         # Trapsheet data.
         try:
-            trapsheet=playerData["trapsheet"]
+            trapsheet=result["trapsheet"]
         except:
             print("ERROR: Trap sheet data does not exist!")
             return
@@ -302,25 +349,41 @@ class FunkPlot():
         if lts==0:
             print("ERROR: Trap sheet is empty!")
             return
-
-        X=[] ; Y=[] ; AOA=[] ; ALT=[]
-        for ts in trapsheet:
-            X.append(ts["X"])
-            Y.append(ts["Z"])
-            AOA.append(ts["AoA"])
-            ALT.append(ts["Alt"])
+        
+        if type(trapsheet) is dict:
+            #print("Get trapsheet dict!")
+            X=np.array(trapsheet["X"])
+            Y=np.array(trapsheet["Z"])
+            AOA=np.array(trapsheet["AoA"])
+            ALT=np.array(trapsheet["Alt"])
+        else:
+            X=[] ; Y=[] ; AOA=[] ; ALT=[]
+            for ts in trapsheet:
+                #print("Get trapsheet other!")
+                X.append(ts["X"])
+                Y.append(ts["Z"])
+                AOA.append(ts["AoA"])
+                ALT.append(ts["Alt"])
  
-        actype=_GetVal(playerData, "airframe", "Unkown")
-        Tgroove=_GetVal(playerData, "Tgroove", "?")
+        actype=_GetVal(result, "airframe", "Unkown")
+        Tgroove=_GetVal(result, "Tgroove", "?")
 
-        carriertype=_GetVal(Grade, "Tgroove", "?")
-        windondeck=_GetVal(Grade, "wind", "?")
-        missiontime=_GetVal(Grade, "mitime", "?")
-        missiondate=_GetVal(Grade, "midate", "?")
-        theatre=_GetVal(Grade, "theatre", "?")
+        player=_GetVal(result, "name", "Ghostrider")
+        grade=_GetVal(result, "finalscore", "?")
+        points=_GetVal(result, "points", "?")
+        details=_GetVal(result, "details")
+        case=_GetVal(result, "case", "?")
+        wire=_GetVal(result, "wire", "?")
+
+        carriertype=_GetVal(result, "carriertype", "?")
+        carriername=_GetVal(result, "carriername", "?")
+        windondeck=_GetVal(result, "wind", "?")
+        missiontime=_GetVal(result, "mitime", "?")
+        missiondate=_GetVal(result, "midate", "?")
+        theatre=_GetVal(result, "theatre", "Unknown Map")
 
         # Angled runway.
-        theta=_GetVal(Grade, "carrierrwy", -9)
+        theta=_GetVal(result, "carrierrwy", -9)
 
         if abs(theta)>0.1:
             angledRunway=True
@@ -364,6 +427,26 @@ class FunkPlot():
         # Set matplotlib backend.
         #matplotlib.use('Agg')
         #plt.ioff()
+
+        # Annotation box with Carrier data.
+        #offsetbox = TextArea(f'{carriername}\n{carriertype}\nCase {case}\nWind {windondeck}', 
+        #textprops={"alpha": 0.8, "color": "lightsteelblue", "backgroundcolor": PlotColor.FACE.value})
+        #ab = AnnotationBbox(offsetbox, (1.0, 1.08), xycoords='figure fraction', horizontalalignment='right', verticalalignment="top") #, boxcoords='axes fraction')
+        #axs[0].add_artist(ab)
+
+        # second annotation relative to the axis limits
+        bbox_props = dict(boxstyle="round, pad=0.5", fc=PlotColor.FACE.value, ec="lightsteelblue", lw=1)
+
+        carrierinfo=str(f"{carriername}\n{carriertype}\nCase {case}\nWind {windondeck}")
+        plt.annotate(carrierinfo, xy=(0.99, 0.98), xycoords='figure fraction', alpha=0.6, color="lightsteelblue", horizontalalignment='right', verticalalignment="top", bbox=bbox_props)
+
+        # Mission date at left bottom
+        timestamp=str(f"{theatre}: {missiondate} ({missiontime})")
+        plt.annotate(timestamp, xy=(0, 0), xycoords='figure fraction', alpha=0.5, color="grey", horizontalalignment='left', verticalalignment="bottom")
+
+        # Real date at right bottom.
+        timestamp = datetime.now().strftime(f"%Y-%b-%d (%H:%M:%S)")
+        plt.annotate(timestamp, xy=(1, 0.0), xycoords='figure fraction', alpha=0.5, color="grey", horizontalalignment='right', verticalalignment="bottom")
 
         if angledRunway:
             # These are the CVN images:
@@ -514,26 +597,13 @@ class FunkPlot():
         """
         Title
         """
-        player=_GetVal(playerData, "name", "Ghostrider")
-        grade=_GetVal(Grade, "finalscore", "?")
-        points=_GetVal(Grade, "points", "?")
-        details=_GetVal(Grade, "details")
-        case=_GetVal(Grade, "case", "?")
-        wire=_GetVal(Grade, "wire", "?")
-
         # Create title.
         title = str(f'Trapsheet of {player} [{actype}]')
-        title+= str(f"\n Case {case}, {wire} wire: {grade} {points}PT - {details} - T$_G$={Tgroove} s")
+        title+= str(f"\n{grade} {points}PT - {details} - {wire} wire, T$_G$={Tgroove} s")
 
         # Set title.
         fig.suptitle(title, fontsize=12, color=PlotColor.LABEL.value)
 
-        """
-        Save figure
-        """
-
-        # Save figure.
-        #fig.savefig('D:/trapsheet.png', facecolor=PlotColor.FACE.value)
 
         return fig, axs
 

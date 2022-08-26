@@ -23,6 +23,14 @@ class FunkBot(discord.Client):
         self.token=str(Token)
         self.channelID=int(ChannelID)
 
+    def SetCallbackStart(self, Func, *argv, **kwargs):
+        """Callback function called at start."""
+        print("call back fbot")
+        print(argv)
+        self.callbackStartFunc=Func
+        self.callbackStartArgv=argv
+        self.callbackStartKarg=kwargs
+
     async def on_ready(self):
         """
         Event when connected to server.
@@ -39,6 +47,14 @@ class FunkBot(discord.Client):
         # Set message to channel.
         await self.SendMessage("FunkBot reporting for duty!", self.channelID)
 
+        # Call back function.
+        #try:
+        #print("Call back")
+        #self.callbackStartFunc(self.callbackStartArgv, self.callbackStartKarg)
+        #except:
+        #    print("No callback!")
+        #    pass
+
         # Debug tests.
         if False:
             from funkman.utils.tests import testTrap, testBomb, testStrafe
@@ -46,23 +62,17 @@ class FunkBot(discord.Client):
 
             funkyplot=FunkPlot()
 
+            # Test trap.
             f1, a1=testTrap(funkyplot)
-            #f2, a2=testBomb(funkyplot)
-            #f3, a3=testStrafe(funkyplot)
+            self.SendFig(f1, self.channelID)
 
-            self.SendFig(f1)
-            #self.SendFig(f2)
-            #self.SendFig(f3)
+            # Test bomb.
+            f2, a2=testBomb(funkyplot)
+            self.SendFig(f2, self.channelID)
 
-    def _Start(self):
-        """ Start the Discord bot in it's own thread"""
-
-        # Info message.
-        print("Starting threaded discord bot!")
-
-        # Start thread.
-        discordThread=threading.Thread(target=self.Start)
-        discordThread.start()
+            # Test strafe.
+            f3, a3=testStrafe(funkyplot)            
+            self.SendFig(f3, self.channelID)
 
     def Start(self, Threaded=False):
         """

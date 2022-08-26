@@ -56,10 +56,18 @@ class FunkMan():
         # Set message channel ID.
         self.funksock.SetChannelIdMessage(self.channelIDmain)
 
+        # Set channel ID for range data.
         self.funksock.SetChannelIdRange(self.channelIDrange)
 
+        # Set channel ID for airboss data.
         self.funksock.SetChannelIdAirboss(self.channelIDairboss)
         
+
+    def SetCallbackStart(self, Func, *argv, **kwargs):
+        """Callback function called at start."""
+        print("callback fman")
+        print(argv)
+        self.funkbot.SetCallbackStart(Func, *argv, **kwargs)
 
     def Start(self):
         """
@@ -81,12 +89,10 @@ def _ReadConfig(funkman: FunkMan) -> None:
     print("Current working directory: {0}".format(cwd))
 
     # Check if config file exists
-    file_exists = os.path.exists(funkman.ConfigFile)
-
-    if file_exists:
-        pass
-    else:
-        print(f"ERROR: Could not find ini file {funkman.ConfigFile}!")
+    try:
+        os.path.exists(funkman.ConfigFile)
+    except FileNotFoundError:
+        print(f"Could not find ini file {funkman.ConfigFile} in {cwd}!")
         quit()
 
     # Config parser.
