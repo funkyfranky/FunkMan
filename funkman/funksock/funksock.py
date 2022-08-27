@@ -131,6 +131,9 @@ class FunkSocket(socketserver.UDPServer):
             elif table["type"]=="Trap Sheet":
                 print("Got trap sheet!")
 
+                # Send LSO grade.
+                self.funkbot.SendLSOEmbed(table, self.channelIDairboss)
+
                 # Create trap sheet figure.
                 fig, ax=self.funkplot.PlotTrapSheet(table)
 

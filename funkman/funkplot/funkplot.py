@@ -9,7 +9,6 @@ from matplotlib.offsetbox import TextArea, AnnotationBbox
 import matplotlib
 import math
 import numpy as np
-import csv
 from datetime import datetime
 from enum import Enum
 from ..utils.utils import _GetVal
@@ -608,30 +607,5 @@ class FunkPlot():
         return fig, axs
 
 
-    def ReadTrapsheet(self, filename):
-        """
-        Read a trap sheet into a dictionary as numpy arrays.
-        """        
-        d={}
-        try:
-            with open(filename) as f:
-                reader = csv.DictReader(f)
 
-                for k in reader.fieldnames:
-                    d[k]=np.array([])
-
-                for row in reader:
-                    for k in reader.fieldnames:
-                        svalue = row[k]
-                        try:
-                            fvalue = float(svalue)
-                            #print("float value: ", fvalue)
-                            d[k] = np.append(d[k],fvalue)
-                        except ValueError:
-                            #print("Not a float", svalue)
-                            d[k]=svalue
-        except:
-            print('ERROR!')
-
-        return d
 

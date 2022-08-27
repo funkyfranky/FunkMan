@@ -2,74 +2,61 @@
 Test cases.
 """
 
-from random import randint
-import matplotlib.pyplot as plt
+from random              import randint
 from ..funkplot.funkplot import FunkPlot
+from ..utils.utils       import ReadTrapsheet
 
-def testStrafe(funkplot: FunkPlot):
+def getResultStrafe():
 
     Nfired=randint(1, 500)
     Nhit=randint(0, Nfired)
 
-    # Strafe result.
+    # Result.
     resultStrave = {
-    "type": "Strafe Result",
-    "player": "funkyfranky",
-    "name": "My Target",
-    "clock": "9:45:01",
-    "midate": "2022-04-01",
-    "roundsFired": Nfired,
-    "roundsHit": Nhit,
-    "roundsQuality": "Some Quality",
-    "strafeAccuracy": Nhit/Nfired*100,
-    "rangename": "My Range",
-    "airframe": "F/A-18C_hornet",
-    "invalid": "false",
+        "type": "Strafe Result",
+        "player": "funkyfranky",
+        "name": "My Target",
+        "clock": "9:45:01",
+        "midate": "2022-04-01",
+        "roundsFired": Nfired,
+        "roundsHit": Nhit,
+        "roundsQuality": "Some Quality",
+        "strafeAccuracy": Nhit/Nfired*100,
+        "rangename": "My Range",
+        "airframe": "F/A-18C_hornet",
+        "invalid": "false",
     }
 
-    print("Testing StrafeRun plot")
+    return resultStrave
 
-    # Create figuire.
-    fig, ax=funkplot.PlotStrafeRun(resultStrave)
+def getResultBomb():
 
-    return fig, ax
+    # Result.
+    result={
+        "type": "Bomb Result",
+        "name": "Target Name",
+        "distance": randint(5,300),
+        "radial": randint(1,360),
+        "weapon": "Mk 82",
+        "quality": "Ineffective",
+        "player": "funkyfranky",
+        "clock": "8:02",
+        "airframe": "F/A-18C_hornet",
+        "rangename": "My Range Name",
+        "attackHdg": randint(1,360),
+        "attackVel": randint(250, 400),
+        "attackAlt": randint(6000, 12000),
+        "theater": "Caucasus"
+    } 
 
-def testBomb(funkplot: FunkPlot):
+    return result
 
-    # Bomb run result
-    resultBomb = {
-    "type": "Bomb Result",
-    "name": "Target Name",
-    "distance": randint(5,300),
-    "radial": randint(1,360),
-    "weapon": "Mk 82",
-    "quality": "Ineffective",
-    "player": "funkyfranky",
-    "clock": "8:02",
-    "airframe": "F/A-18C_hornet",
-    "rangename": "My Range Name",
-    "attackHdg": randint(1,360),
-    "attackVel": randint(250, 400),
-    "attackAlt": randint(6000, 12000),
-    "theater": "Caucasus"
-    }     
-
-    # Debug info.
-    print("Testing BombRun plot")
-
-    # Create figure.
-    fig, ax=funkplot.PlotBombRun(resultBomb)
-
-    return fig, ax
-
-def testTrap(funkplot: FunkPlot):
-
-    # Test template file.
-    trapfile="D:/AIRBOSS-CVN-71_Trapsheet-New callsign_FA-18C_hornet-0006.csv"
-
+def getResultTrap(trapfile: str):
+    
     # Read trapsheet from disk for testing.
-    trapsheet=funkplot.ReadTrapsheet(trapfile)
+    trapsheet=ReadTrapsheet(trapfile)
 
+    # Result.
     result={
         "name":"funkyfranky",
         "trapsheet": trapsheet,
@@ -88,9 +75,42 @@ def testTrap(funkplot: FunkPlot):
         "points": 3,
         "details": "LUL"
     }
-    
+
+    return result
+
+def testStrafe(funkplot: FunkPlot):
+
     # Debug info.
-    print("Testing TrapSheet plot")
+    print("Testing StrafeRun plot")
+
+    # Get result.
+    resultStrafe=getResultStrafe()
+
+    # Create figuire.
+    fig, ax=funkplot.PlotStrafeRun(resultStrafe)
+
+    return fig, ax
+
+def testBomb(funkplot: FunkPlot):
+
+    # Debug info.
+    print("Testing BombRun plot")
+
+    # Get result.
+    resultBomb=getResultBomb()
+
+    # Create figure.
+    fig, ax=funkplot.PlotBombRun(resultBomb)
+
+    return fig, ax
+
+def testTrap(funkplot: FunkPlot, trapfile: str):
+
+    # Debug info.
+    print(f"Testing TrapSheet plot from {trapfile}")
+
+    # Get result.
+    result=getResultTrap(trapfile)
 
     # Create figure.
     fig, axs=funkplot.PlotTrapSheet(result)
