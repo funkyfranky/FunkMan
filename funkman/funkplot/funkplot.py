@@ -114,11 +114,11 @@ class FunkPlot():
         zmax=195
 
         # Define distance.
-        distance=_GetVal(result, "distance", 500,  0)
-        radial=_GetVal(result, "radial", 0, 0)
+        distance=float(_GetVal(result, "distance", 500,  0))
+        radial=float(_GetVal(result, "radial", 0, 0))
 
         # Attack parameters.
-        attackHdg=_GetVal(result, "attackHdg", 0, 0)
+        attackHdg=float(_GetVal(result, "attackHdg", 0, 0))
         attackAlt=_GetVal(result, "attackAlt", "?", 0)
         attackVel=_GetVal(result, "attackVel", "?", 0)
 
@@ -128,14 +128,14 @@ class FunkPlot():
         missiondate=_GetVal(result, "midate", "?")
         
         # Try to figure out if the impact was long, short, left, right.
-        dphi=radial-attackHdg
+        dphi=float(radial)-float(attackHdg)
         if dphi>=-45 and dphi<45:
             pass
         elif dphi>=45 and dphi<90:            
             pass
 
         # Convert from polar to cartesian coordinates.
-        x,y=self._Polar2Cart(min(distance, zmax), radial)
+        x,y=self._Polar2Cart(min(distance, zmax), float(radial))
 
         # Create figure and axis objects.
         fig, ax = plt.subplots(1, 1, facecolor=PlotColor.FACE.value, sharex=True, dpi=150)
@@ -178,11 +178,11 @@ class FunkPlot():
         plt.imshow(self.imageCrater, interpolation='none', origin='upper', extent=[x-scrater, x+scrater, y-scrater, y+scrater], clip_on=True)
 
         # Attack heading arrow in North Up image.
-        xa,ya=self._Polar2Cart(30, attackHdg)
+        xa,ya=self._Polar2Cart(30, float(attackHdg))
         ax.arrow(north, north, xa, ya, head_width=5, head_length=5, zorder=501, length_includes_head=True, color="green")
 
         # Attack heading arrow.
-        xa,ya=self._Polar2Cart(30, radial)
+        xa,ya=self._Polar2Cart(30, float(radial))
         ax.arrow(north, north, xa, ya, head_width=5, head_length=5, zorder=500, length_includes_head=True, color="red")
 
         # Plot grid.
@@ -447,22 +447,19 @@ class FunkPlot():
         if angledRunway:
             # These are the CVN images:
 
-            cx=1000
-            cy=343
-
             # Top-down view.
-            axs[0].figure.figimage(self.imageCVNtop, cx, cy, alpha=.45, zorder=1, clip_on=True)
+            axs[0].figure.figimage(self.imageCVNtop,  1000, 370, alpha=0.45, zorder=1, clip_on=True)
 
             # Side view.
-            axs[0].figure.figimage(self.imageCVNside, 1000, 567, alpha=.45, zorder=1)
+            axs[0].figure.figimage(self.imageCVNside, 1000, 567, alpha=0.45, zorder=1, clip_on=True)
         else:
             # These are the LHA images:
 
             # Top-down view.
-            axs[0].figure.figimage(self.imageLHAtop, 940, 320, alpha=.75, zorder=1, clip_on=True)
+            axs[0].figure.figimage(self.imageLHAtop,   940, 320, alpha=0.75, zorder=1, clip_on=True)
 
             # side view for the glideslope plot
-            axs[0].figure.figimage(self.imageLHAside, 930, 567, alpha=0.75, zorder=1)
+            axs[0].figure.figimage(self.imageLHAside,  930, 567, alpha=0.75, zorder=1, clip_on=True)
 
 
         """

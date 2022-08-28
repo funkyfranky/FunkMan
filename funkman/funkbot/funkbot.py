@@ -77,12 +77,12 @@ class FunkBot(commands.Bot):
             self.SendFig(f1, self.channelID)
 
             # Test bomb.
-            #f2, a2=testBomb(funkyplot)
-            #self.SendFig(f2, self.channelID)
+            f2, a2=testBomb(funkyplot)
+            self.SendFig(f2, self.channelID)
 
             # Test strafe.
-            #f3, a3=testStrafe(funkyplot)            
-            #self.SendFig(f3, self.channelID)
+            f3, a3=testStrafe(funkyplot)            
+            self.SendFig(f3, self.channelID)
 
     def Start(self, Threaded=False):
         """
@@ -181,15 +181,37 @@ class FunkBot(commands.Bot):
         missiondate=_GetVal(result, "midate", "?")
         theatre=_GetVal(result, "theatre", "Unknown Map")
 
+        color=0x00ff00
+        urlIm="https://i.imgur.com/rBKaTVr.png"
+        if type(points)==int:
+            if points==0:#
+                color=0x000000 #black
+                urlIm="https://i.imgur.com/6sxWxye.png"
+            elif points==1:
+                color=0xff0000 #red
+                urlIm="https://i.imgur.com/AXY41L0.png"
+            elif points==2:
+                color=0xFFA500 #orange
+                urlIm="https://i.imgur.com/T0DVmPm.png"
+            elif points==3:
+                color=0xFFFF00 #yellow
+                urlIm="https://i.imgur.com/s5hpF1o.png"
+            elif points==4:
+                color=0x00FF00 #green
+                urlIm="https://i.imgur.com/rBKaTVr.png"
+            elif points==5:
+                color=0x0000FF #blue
+                urlIm="https://i.imgur.com/Zp4ci6P.png"
+
         # Create Embed
-        embed = discord.Embed(title="LSO Grade", description=f"Result for {player} at carrier {carriername} [{carriertype}]", color=0x00ff00)
+        embed = discord.Embed(title="LSO Grade", description=f"Result for {player} at carrier {carriername} [{carriertype}]", color=color)
 
         # Create file.
         fileLSO = discord.File("./images/LSO.png", filename="lso.png")
 
         # Images.
         embed.set_image(url="attachment://lso.png")
-        embed.set_thumbnail(url="https://i.imgur.com/POIZ7hi.png")
+        embed.set_thumbnail(url=urlIm)
 
         # Author.
         embed.set_author(name="FunkMan")
