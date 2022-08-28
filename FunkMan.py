@@ -12,7 +12,7 @@ from funkman.funkman           import FunkMan
 if __name__ == "__main__":
 
 	# Welcome!
-	print("Hello, my name is FunkMan and I'm at your service!")
+	print("Hello, my name is FunkMan. I'm at your service!")
 
 	# Create funkman instance.
 	fman=FunkMan()

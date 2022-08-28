@@ -59,14 +59,16 @@ class FunkBot(commands.Bot):
 
         # Debug tests.
         if False:
-            pass
             from funkman.utils.tests import testTrap, testBomb, testStrafe, getResultTrap
             from funkman.funkplot.funkplot import FunkPlot
 
+            # Init FunkPlot.
             funkyplot=FunkPlot()
 
-            trapfile="D:/Users/frank/Saved Games/DCS.openbeta/AIRBOSS-CVN-74_Trapsheet-New callsign_FA-18C_hornet-0003.csv"
+            # Trap sheet file.
+            trapfile="D:/Users/frank/Saved Games/DCS.openbeta/AIRBOSS-CVN-74_Trapsheet-New callsign_FA-18C_hornet-0001.csv"
 
+            # Test LSO embed.
             result=getResultTrap(trapfile)
             self.SendLSOEmbed(result, self.channelID)
 
@@ -109,14 +111,17 @@ class FunkBot(commands.Bot):
         try:
             self.loop.create_task(channel.send(Text))
         except:
-            print("ERROR: Could not send text!")
+            print(f"ERROR: Could not send text! {Text}")
 
-    def SendDiscordFile(self, DiscordFile: discord.File, ChannelID: int, Embed: discord.Embed):
+    def SendDiscordFile(self, DiscordFile: discord.File, ChannelID: int, Embed: discord.Embed=None):
         """
         Send discord file.
         """
         channel=self.get_channel(ChannelID)
-        self.loop.create_task(channel.send(file=DiscordFile, embed=Embed))
+        if Embed:
+            self.loop.create_task(channel.send(file=DiscordFile, embed=Embed))
+        else:
+            self.loop.create_task(channel.send(file=DiscordFile))
 
     def SendDiscordEmbed(self, DiscordFile: discord.Embed, ChannelID: int):
         """
@@ -129,17 +134,14 @@ class FunkBot(commands.Bot):
         """
         Send text message to channel using loop.create_task().
         """
-        try:
-            # Rewind stream.
-            DataStream.seek(0)
+        # Rewind stream.
+        DataStream.seek(0)
 
-            # Create data stream.
-            file= discord.File(DataStream, filename="funkbot.png", spoiler=False)
-            
-            # Send discord file.
-            self.SendDiscordFile(file, ChannelID)
-        except:
-            print("ERROR: Could not send text!")
+        # Create data stream.
+        file= discord.File(DataStream, filename="funkbot.png", spoiler=False)
+        
+        # Send discord file.
+        self.SendDiscordFile(file, ChannelID)
 
     def SendFig(self, fig, ChannelID: int):
         """
@@ -150,7 +152,6 @@ class FunkBot(commands.Bot):
         data_stream=io.BytesIO()
 
         # Seve figure in data stream.
-        #fig.savefig(data_stream, format='png', bbox_inches="tight", dpi=150)
         fig.savefig(data_stream, format='png')
 
         # Close figure.
@@ -159,25 +160,23 @@ class FunkBot(commands.Bot):
         # Send data stream.
         self.SendIO(data_stream, ChannelID)
 
-
     def SendLSOEmbed(self, result, ChannelID: int):
 
+        # Info message.
         print("Creating LSO Embed")
-        #print(result)
 
+        # Get date from result.
         actype=_GetVal(result, "airframe", "Unkown")
-        Tgroove=_GetVal(result, "Tgroove", "?")
-
+        Tgroove=_GetVal(result, "Tgroove", "?", 1)
         player=_GetVal(result, "name", "Ghostrider")
-        grade=_GetVal(result, "finalscore", "?")
+        grade=_GetVal(result, "grade", "?")
         points=_GetVal(result, "points", "?")
         details=_GetVal(result, "details", "?")
         case=_GetVal(result, "case", "?")
         wire=_GetVal(result, "wire", "?")
-
         carriertype=_GetVal(result, "carriertype", "?")
         carriername=_GetVal(result, "carriername", "?")
-        windondeck=_GetVal(result, "wind", "?")
+        windondeck=_GetVal(result, "wind", "?", 1)
         missiontime=_GetVal(result, "mitime", "?")
         missiondate=_GetVal(result, "midate", "?")
         theatre=_GetVal(result, "theatre", "Unknown Map")
@@ -187,23 +186,26 @@ class FunkBot(commands.Bot):
 
         # Create file.
         fileLSO = discord.File("./images/LSO.png", filename="lso.png")
-        filePts = discord.File("./images/Points2.png", filename="points.png")
 
+        # Images.
         embed.set_image(url="attachment://lso.png")
-        embed.set_thumbnail(url="attachment://points.png")
+        embed.set_thumbnail(url="https://i.imgur.com/POIZ7hi.png")
 
         # Author.
         embed.set_author(name="FunkMan")
 
+        # Data.
         embed.add_field(name="Grade", value=grade, inline=True)
         embed.add_field(name="Points", value=points, inline=True)
         embed.add_field(name="Details", value=details, inline=True)
-        embed.add_field(name="Tgroove", value=Tgroove, inline=True)
+        embed.add_field(name="Groove", value=Tgroove, inline=True)
         embed.add_field(name="Wire", value=wire, inline=True)
-
         embed.add_field(name="Case", value=case, inline=True)
         embed.add_field(name="Wind", value=windondeck, inline=True)
+        embed.add_field(name="Aircraft", value=actype, inline=True)
 
-        embed.set_footer(text="I am the footer!")
+        # Footer.
+        embed.set_footer(text=f"{theatre}: {missiondate} ({missiontime})")
 
+        # Send to Discord.
         self.SendDiscordFile(fileLSO, ChannelID, embed)

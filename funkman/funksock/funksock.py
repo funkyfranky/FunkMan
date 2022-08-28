@@ -32,7 +32,7 @@ class FunkHandler(socketserver.BaseRequestHandler):
         # Table data.
         table=json.loads(data)
 
-        if False:
+        if True:
             print("Table from JSON:")
             #print(table)
             #print("---------------")
@@ -98,19 +98,25 @@ class FunkSocket(socketserver.UDPServer):
     def EvalData(self, table):
         """Evaluate data received from socket. You might want to overwrite this function."""
 
+        # Debug info.
+        if False:
+            print("FunkSock Eval Data:")
+            print(table)
+            print("--------------------------------------")
+
         # Treat different cases.
-        if "messageString" in table:
-            print("Got text message!")
+        if "dataType" in table:
 
-            # Extract text.
-            text=table["messageString"]
+            if table["dataType"]=="Text Message":
+                print("Got text message!")
 
-            # Send text to Discord.
-            self.funkbot.SendText(text, self.channelIDmessage)
+                # Extract text.
+                text=table["text"]
 
-        elif "type" in table:
+                # Send text to Discord.
+                self.funkbot.SendText(text, self.channelIDmessage)
 
-            if table["type"]=="Bomb Result":
+            if table["dataType"]=="Bomb Result":
                 print("Got bomb result!")
 
                 # Create bomb run figure.
@@ -119,7 +125,7 @@ class FunkSocket(socketserver.UDPServer):
                 # Send figure to Discord.
                 self.funkbot.SendFig(fig, self.channelIDrange)
 
-            elif table["type"]=="Strafe Result":
+            elif table["dataType"]=="Strafe Result":
                 print("Got strafe result!")
 
                 # Create strafe run figure.
@@ -128,7 +134,7 @@ class FunkSocket(socketserver.UDPServer):
                 # Send figure to discord.
                 self.funkbot.SendFig(fig, self.channelIDrange)
 
-            elif table["type"]=="Trap Sheet":
+            elif table["dataType"]=="Trap Sheet":
                 print("Got trap sheet!")
 
                 # Send LSO grade.
@@ -141,7 +147,7 @@ class FunkSocket(socketserver.UDPServer):
                 self.funkbot.SendFig(fig, self.channelIDairboss)
 
             else:
-                print("ERROR: Unknown type in table!")
+                print("ERROR: Unknown data type in table!")
         else:
-            print("Unknown message type!")
+            print("ERROR: dataType not key in table!")
             print(table)

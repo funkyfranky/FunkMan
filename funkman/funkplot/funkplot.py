@@ -114,13 +114,13 @@ class FunkPlot():
         zmax=195
 
         # Define distance.
-        distance=_GetVal(result, "distance", 500)
-        radial=_GetVal(result, "radial", 0)
+        distance=_GetVal(result, "distance", 500,  0)
+        radial=_GetVal(result, "radial", 0, 0)
 
         # Attack parameters.
-        attackHdg=_GetVal(result, "attackHdg", 0)
-        attackAlt=_GetVal(result, "attackAlt", "?")
-        attackVel=_GetVal(result, "attackVel", "?")
+        attackHdg=_GetVal(result, "attackHdg", 0, 0)
+        attackAlt=_GetVal(result, "attackAlt", "?", 0)
+        attackVel=_GetVal(result, "attackVel", "?", 0)
 
         # Mission info.
         theatre=_GetVal(result, "theatre", "Unknown Map")
@@ -154,6 +154,7 @@ class FunkPlot():
         # Set title.
         fig.suptitle(title, fontsize=12, color=PlotColor.LABEL.value)
 
+        # Set figure size.
         fig.set_size_inches(8, 6)
 
         # Set background color.
@@ -348,27 +349,26 @@ class FunkPlot():
         if lts==0:
             print("ERROR: Trap sheet is empty!")
             return
-        
-        if type(trapsheet) is dict:
-            #print("Get trapsheet dict!")
-            X=np.array(trapsheet["X"])
-            Y=np.array(trapsheet["Z"])
-            AOA=np.array(trapsheet["AoA"])
-            ALT=np.array(trapsheet["Alt"])
-        else:
-            X=[] ; Y=[] ; AOA=[] ; ALT=[]
-            for ts in trapsheet:
-                #print("Get trapsheet other!")
-                X.append(ts["X"])
-                Y.append(ts["Z"])
-                AOA.append(ts["AoA"])
-                ALT.append(ts["Alt"])
- 
+
+        # Conversion factor NM to feet.
+        nm2feet = 6076.12
+        nm2meter = 1852
+        meter2nm = 1.0/1852.0
+        meter2feet = 3.28084
+        feet2meter = 0.3048
+
+        # Get arrays.
+        X=-np.array(trapsheet["X"])               # X in meters. Take care of minus sign!
+        Y=np.array(trapsheet["Z"])                # Y in meters.
+        AOA=np.array(trapsheet["AoA"])            # Angle of attack in AU.
+        ALT=np.array(trapsheet["Alt"])*meter2feet # Altitude in feet.
+
+        # Get other info from result.
         actype=_GetVal(result, "airframe", "Unkown")
-        Tgroove=_GetVal(result, "Tgroove", "?")
+        Tgroove=_GetVal(result, "Tgroove", "?", 1)
 
         player=_GetVal(result, "name", "Ghostrider")
-        grade=_GetVal(result, "finalscore", "?")
+        grade=_GetVal(result, "grade", "?")
         points=_GetVal(result, "points", "?")
         details=_GetVal(result, "details")
         case=_GetVal(result, "case", "?")
@@ -376,7 +376,7 @@ class FunkPlot():
 
         carriertype=_GetVal(result, "carriertype", "?")
         carriername=_GetVal(result, "carriername", "?")
-        windondeck=_GetVal(result, "wind", "?")
+        windondeck=_GetVal(result, "wind", "?", 1)
         missiontime=_GetVal(result, "mitime", "?")
         missiondate=_GetVal(result, "midate", "?")
         theatre=_GetVal(result, "theatre", "Unknown Map")
@@ -399,9 +399,6 @@ class FunkPlot():
         # Skip last AoA values as they are to inaccurate.    
         num_aoa = 3
 
-        # Conversion factor.
-        feet = 6076.12  # = -1 Nautical mile
-
         # Rotation matrix.
         rotMatrix = np.array([[np.cos(theta), -np.sin(theta)],
                               [np.sin(theta),  np.cos(theta)]])
@@ -409,7 +406,7 @@ class FunkPlot():
         # X-Y array in NM
         dx = 20
         dy = 20
-        xy = np.array([X+dx, Y+dy])/1852
+        xy = np.array([X+dx, Y+dy])*meter2nm # convert to NM
 
         # Rotate grid
         xy = np.dot(rotMatrix, xy)
@@ -476,7 +473,7 @@ class FunkPlot():
         ax = axs[1]
 
         # y-axis limit
-        ax.set_ylim([-401,801])
+        #ax.set_ylim([-401,801])
 
         # Line up referece line.
         if angledRunway:
@@ -491,10 +488,10 @@ class FunkPlot():
         ax.plot(m1, m2, PlotColor.REFERENCE.value, linewidth=2, alpha=0.8)
 
         # Plot lineup with glow.
-        ax.plot(X, -feet*Y, 'g',  linewidth=16, alpha=0.10)
-        ax.plot(X, -feet*Y, 'g',  linewidth=10, alpha=0.10)
-        ax.plot(X, -feet*Y, 'g',  linewidth=6,  alpha=0.15) 
-        ax.plot(X, -feet*Y, 'w-', linewidth=1,  alpha=0.45)
+        ax.plot(X, -nm2feet*Y, 'g',  linewidth=16, alpha=0.10)
+        ax.plot(X, -nm2feet*Y, 'g',  linewidth=10, alpha=0.10)
+        ax.plot(X, -nm2feet*Y, 'g',  linewidth=6,  alpha=0.15)
+        ax.plot(X, -nm2feet*Y, 'w-', linewidth=1,  alpha=0.45)
 
         # Add text "Lineup"
         ax.text(xpoint, 510, "Lineup", color=PlotColor.LABEL.value, fontsize=xpointsize, alpha=0.5)
@@ -509,11 +506,11 @@ class FunkPlot():
         ax.set_ylim([-1,650])  #Glideslope Reference scale from 0 to 650 feet
 
         if angledRunway:
-            zt = feet*X*np.tan(math.radians(3.5))
+            zt = nm2feet*X*np.tan(math.radians(3.5))
             gx = 0
             gz = 40
         else:
-            zt = feet*X*np.tan(math.radians(3.5))
+            zt = nm2feet*X*np.tan(math.radians(3.5))
             gx = 0
             gz = 40
 
@@ -603,6 +600,8 @@ class FunkPlot():
         # Set title.
         fig.suptitle(title, fontsize=12, color=PlotColor.LABEL.value)
 
+        # Show plot.
+        #plt.show()
 
         return fig, axs
 

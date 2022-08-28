@@ -13,7 +13,7 @@ def getResultStrafe():
 
     # Result.
     resultStrave = {
-        "type": "Strafe Result",
+        "dataType": "Strafe Result",
         "player": "funkyfranky",
         "name": "My Target",
         "clock": "9:45:01",
@@ -25,6 +25,7 @@ def getResultStrafe():
         "rangename": "My Range",
         "airframe": "F/A-18C_hornet",
         "invalid": "false",
+        "theatre": "Caucasus",
     }
 
     return resultStrave
@@ -33,7 +34,7 @@ def getResultBomb():
 
     # Result.
     result={
-        "type": "Bomb Result",
+        "dataType": "Bomb Result",
         "name": "Target Name",
         "distance": randint(5,300),
         "radial": randint(1,360),
@@ -46,7 +47,7 @@ def getResultBomb():
         "attackHdg": randint(1,360),
         "attackVel": randint(250, 400),
         "attackAlt": randint(6000, 12000),
-        "theater": "Caucasus"
+        "theatre": "Caucasus",
     } 
 
     return result
@@ -58,12 +59,13 @@ def getResultTrap(trapfile: str):
 
     # Result.
     result={
-        "name":"funkyfranky",
+        "dataType": "Trap Sheet",
+        "name": "funkyfranky",
         "trapsheet": trapsheet,
         "airframe": 'FA-18C_hornet',
         "mitime": "05:00:01",
         "midate":"2022-04-01",
-        "wind": 25,
+        "wind": 25.13432432432423,
         "carriertype": "CVN-74",
         "carriername": "USS Stennis",
         "carrierrwy": -9,
@@ -71,10 +73,13 @@ def getResultTrap(trapfile: str):
         "Tgroove": randint(10, 20),
         "wire": randint(1,4),
         "case": randint(1,3),
-        "finalscore": "OK",
+        "grade": "OK",
+        "finalscore": 2,
         "points": 3,
-        "details": "LUL"
+        "details": "(LUL)X (F)IM  LOLULIC LOLULAR"
     }
+
+    #print(result)
 
     return result
 
