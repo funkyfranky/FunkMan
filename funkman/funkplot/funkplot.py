@@ -433,7 +433,7 @@ class FunkPlot():
         # second annotation relative to the axis limits
         bbox_props = dict(boxstyle="round, pad=0.5", fc=PlotColor.FACE.value, ec="lightsteelblue", lw=1)
 
-        carrierinfo=str(f"{carriername}\n{carriertype}\nCase {case}\nWind {windondeck}")
+        carrierinfo=str(f"{carriername}\n{carriertype}\nCase {case}\nWind {windondeck}\n{wire} wire\nT$_G$={Tgroove}")
         plt.annotate(carrierinfo, xy=(0.99, 0.98), xycoords='figure fraction', alpha=0.6, color="lightsteelblue", horizontalalignment='right', verticalalignment="top", bbox=bbox_props)
 
         # Mission date at left bottom
@@ -592,7 +592,7 @@ class FunkPlot():
         """
         # Create title.
         title = str(f'Trapsheet of {player} [{actype}]')
-        title+= str(f"\n{grade} {points}PT - {details} - {wire} wire, T$_G$={Tgroove} s")
+        title+= str(f"\n{grade} {points}PT - {details}")
 
         # Set title.
         fig.suptitle(title, fontsize=12, color=PlotColor.LABEL.value)
