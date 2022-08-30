@@ -32,7 +32,7 @@ class FunkHandler(socketserver.BaseRequestHandler):
         # Table data.
         table=json.loads(data)
 
-        if True:
+        if False:
             print("Table from JSON:")
             #print(table)
             #print("---------------")

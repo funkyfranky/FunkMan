@@ -34,12 +34,13 @@ class FunkMan():
         self.channelIDmain=None
         self.channelIDrange=None
         self.channelIDairboss=None
+        self.imagePath=None
 
         # Read config file.
         _ReadConfig(self)
 
         # Create funkplot instance.
-        self.funkplot=FunkPlot()
+        self.funkplot=FunkPlot(self.imagePath)
 
         # Create funkbot instance.
         self.funkbot=FunkBot(self.token, self.channelIDmain)
@@ -111,6 +112,7 @@ def _ReadConfig(funkman: FunkMan) -> None:
     funkman.channelIDmain=int(config[SectionName]['CHANNELID_MAIN'])
     funkman.channelIDrange=int(config[SectionName]['CHANNELID_RANGE'])
     funkman.channelIDairboss=int(config[SectionName]['CHANNELID_AIRBOSS'])
+    funkman.imagePath=str(config[SectionName]['IMAGEPATH'])
 
     # Debug message.
     text =str(f"------------------------------------")
@@ -121,5 +123,6 @@ def _ReadConfig(funkman: FunkMan) -> None:
     text+=str(f"\nChannel Main    = {funkman.channelIDmain}")
     text+=str(f"\nChannel Range   = {funkman.channelIDrange}")
     text+=str(f"\nChannel Airboss = {funkman.channelIDairboss}")
+    text+=str(f"\nImage Path      = {funkman.imagePath}")
     text+=str(f"\n------------------------------------")
     print(text)
