@@ -16,7 +16,7 @@ class FunkBot(commands.Bot):
     API class wrapper for Discord based on discord.py.
     """
 
-    def __init__(self, Token: str, ChannelID: int, Command_Prefix="!"):
+    def __init__(self, Token: str, ChannelID: int, Command_Prefix="!", ImagePath="./funkpics/", DebugLevel=0):
 
         # Init discord.Client superclass.
         super().__init__(Command_Prefix)
@@ -24,6 +24,9 @@ class FunkBot(commands.Bot):
         # Get config parameters:
         self.token=str(Token)
         self.channelID=int(ChannelID)
+
+        self.debugLevel=DebugLevel
+        self.imagePath=ImagePath
 
     def SetCallbackStart(self, Func, *argv, **kwargs):
         """Callback function called at start."""
@@ -58,18 +61,22 @@ class FunkBot(commands.Bot):
         #    pass
 
         # Debug tests.
-        if False:
+        if self.debugLevel>=10:
             from funkman.utils.tests import testTrap, testBomb, testStrafe, getResultTrap
             from funkman.funkplot.funkplot import FunkPlot
+
+            print("Testing Plots...")
 
             # Init FunkPlot.
             funkyplot=FunkPlot()
 
             # Trap sheet file.
-            trapfile="D:/Users/frank/Saved Games/DCS.openbeta/AIRBOSS-CVN-74_Trapsheet-New callsign_FA-18C_hornet-0001.csv"
+            trapfile="./testfiles/Trapsheet-FA-18C_hornet-001.csv"
+
+            # Get result from trap file.
+            result=getResultTrap(trapfile)
 
             # Test LSO embed.
-            result=getResultTrap(trapfile)
             self.SendLSOEmbed(result, self.channelID)
 
             # Test trap.
@@ -93,7 +100,7 @@ class FunkBot(commands.Bot):
             discordThread=threading.Thread(target=self.Start, args=(False, ))
             discordThread.start()
         else:
-            print(f"Starting Bot Client with Token {self.token}")
+            print(f"Starting Bot Client with Token {self.token[0:5]}...")
             self.run(self.token)
 
     async def SendMessage(self, Text: str, ChannelID: int):
@@ -207,7 +214,7 @@ class FunkBot(commands.Bot):
         embed = discord.Embed(title="LSO Grade", description=f"Result for {player} at carrier {carriername} [{carriertype}]", color=color)
 
         # Create file.
-        fileLSO = discord.File("./images/LSO.png", filename="lso.png")
+        fileLSO = discord.File(self.imagePath+"LSO.png", filename="lso.png")
 
         # Images.
         embed.set_image(url="attachment://lso.png")

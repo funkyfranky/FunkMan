@@ -57,6 +57,9 @@ def getResultTrap(trapfile: str):
     # Read trapsheet from disk for testing.
     trapsheet=ReadTrapsheet(trapfile)
 
+    # Debug info.
+    #print(trapsheet)
+
     # Result.
     result={
         "dataType": "Trap Sheet",

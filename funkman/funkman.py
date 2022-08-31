@@ -25,7 +25,7 @@ class FunkMan():
     def __init__(self, ConfigFile="./FunkMan.ini") -> None:
 
         # Set config file.
-        self.ConfigFile=ConfigFile
+        self.configFile=ConfigFile
     
         # Define parameters used later on.
         self.port=None
@@ -36,6 +36,9 @@ class FunkMan():
         self.channelIDairboss=None
         self.imagePath=None
 
+        # Default debug level.
+        self.debugLevel=0
+
         # Read config file.
         _ReadConfig(self)
 
@@ -43,7 +46,7 @@ class FunkMan():
         self.funkplot=FunkPlot(self.imagePath)
 
         # Create funkbot instance.
-        self.funkbot=FunkBot(self.token, self.channelIDmain)
+        self.funkbot=FunkBot(self.token, self.channelIDmain, ImagePath=self.imagePath, DebugLevel=self.debugLevel)
 
         # Create funksocket instance.
         self.funksock=FunkSocket(Host=self.host, Port=self.port)
@@ -83,46 +86,65 @@ def _ReadConfig(funkman: FunkMan) -> None:
     Reads the config file.
     """
 
-    # Get the current working directory
-    cwd = os.getcwd()
-
-    # Print the current working directory
-    print("Current working directory: {0}".format(cwd))
+    # Info message.
+    print(f"Reading config file {funkman.configFile}")
 
     # Check if config file exists
     try:
-        os.path.exists(funkman.ConfigFile)
+        os.path.exists(funkman.configFile)
     except FileNotFoundError:
-        print(f"Could not find ini file {funkman.ConfigFile} in {cwd}!")
+        print(f"Could not find ini file {funkman.configFile} in {os.getcwd()}!")
         quit()
 
     # Config parser.
     config = configparser.ConfigParser()
 
     # Read config file.
-    config.read(funkman.ConfigFile)
+    config.read(funkman.configFile)
 
-    # Section name of config.
-    SectionName="FUNKMAN"
+    # FUNKMAN
+    try:
+        section=config["DEFAULT"]
+        funkman.debugLevel=section.getint("DEBUGLEVEL", 0)
+    except:
+        pass
 
-    # Get config parameters:
-    funkman.port=int(config[SectionName]['PORT'])
-    funkman.host=str(config[SectionName]['HOST'])
-    funkman.token=config[SectionName]['TOKEN']
-    funkman.channelIDmain=int(config[SectionName]['CHANNELID_MAIN'])
-    funkman.channelIDrange=int(config[SectionName]['CHANNELID_RANGE'])
-    funkman.channelIDairboss=int(config[SectionName]['CHANNELID_AIRBOSS'])
-    funkman.imagePath=str(config[SectionName]['IMAGEPATH'])
+    # FUNKBOT
+    try:
+        section=config["FUNKBOT"]
+        funkman.token=section.get("TOKEN", "FROM_OS_ENV")
+        funkman.channelIDmain=section.getint("CHANNELID_MAIN", 123456789)
+        funkman.channelIDrange=section.getint("CHANNELID_RANGE", funkman.channelIDmain)
+        funkman.channelIDairboss=section.getint("CHANNELID_AIRBOSS", funkman.channelIDmain)
+    except:
+        print("ERROR: [FUNKBOT] section missing in ini file!")
+
+    # FUNKSOCK
+    try:
+        section=config["FUNKSOCK"]
+        funkman.port=section.getint("PORT", 10042)
+        funkman.host=section.get("HOST", "127.0.0.1")
+    except:
+        print("ERROR: [FUNKSOCK] section missing in ini file!")
+
+    # FUNKPLOT
+    try:
+        section=config["FUNKPLOT"]
+        funkman.imagePath=section.get("IMAGEPATH", "./funkpics/")
+    except:
+        print("ERROR: [FUNKPLOT] section missing in ini file!")
 
     # Debug message.
-    text =str(f"------------------------------------")
-    text+=str(f"\nReading config file:")
-    text+=str(f"\nHost            = {funkman.host}")
-    text+=str(f"\nPort            = {funkman.port}")    
-    text+=str(f"\nToken           = {funkman.token}")
-    text+=str(f"\nChannel Main    = {funkman.channelIDmain}")
-    text+=str(f"\nChannel Range   = {funkman.channelIDrange}")
-    text+=str(f"\nChannel Airboss = {funkman.channelIDairboss}")
-    text+=str(f"\nImage Path      = {funkman.imagePath}")
-    text+=str(f"\n------------------------------------")
-    print(text)
+    if funkman.debugLevel>0:
+        text =str(f"------------------------------------")
+        text+=str(f"\nConfig parameters:")
+        text+=str(f"\nDebug level     = {funkman.debugLevel}")
+        text+=str(f"\nHost            = {funkman.host}")
+        text+=str(f"\nPort            = {funkman.port}")    
+        text+=str(f"\nToken (5 chars) = {funkman.token[0:4]}...")
+        text+=str(f"\nChannel Main    = {funkman.channelIDmain}")
+        text+=str(f"\nChannel Range   = {funkman.channelIDrange}")
+        text+=str(f"\nChannel Airboss = {funkman.channelIDairboss}")
+        text+=str(f"\nImage Path      = {funkman.imagePath}")
+        text+=str(f"\n------------------------------------")
+        print(text)
