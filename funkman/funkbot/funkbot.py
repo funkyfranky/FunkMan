@@ -70,18 +70,20 @@ class FunkBot(commands.Bot):
             # Init FunkPlot.
             funkyplot=FunkPlot()
 
-            # Trap sheet file.
-            trapfile="./testfiles/Trapsheet-FA-18C_hornet-001.csv"
+            # Trap sheet files.
+            trapfiles=["./testfiles/Trapsheet-FA-18C_hornet-001.csv", "./testfiles/Trapsheet-FA-18C_hornet-002.csv"]
 
-            # Get result from trap file.
-            result=getResultTrap(trapfile)
+            for trapfile in trapfiles:
 
-            # Test LSO embed.
-            self.SendLSOEmbed(result, self.channelID)
+                # Get result from trap file.
+                result=getResultTrap(trapfile)
 
-            # Test trap.
-            f1, a1=testTrap(funkyplot, trapfile)
-            self.SendFig(f1, self.channelID)
+                # Test LSO embed.
+                self.SendLSOEmbed(result, self.channelID)
+
+                # Test trap.
+                f1, a1=testTrap(funkyplot, trapfile)
+                self.SendFig(f1, self.channelID)
 
             # Test bomb.
             f2, a2=testBomb(funkyplot)

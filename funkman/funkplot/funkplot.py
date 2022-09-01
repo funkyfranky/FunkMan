@@ -112,6 +112,10 @@ class FunkPlot():
         Creates a bomb run figure for a given result table.
         """
 
+        # Set matplotlib backend.
+        matplotlib.use('Agg')
+        plt.ioff()
+
         # Length of axes.
         zmax=195
 
@@ -227,6 +231,10 @@ class FunkPlot():
         Creates a strafe run figure for a given result table.
         """
 
+        # Set matplotlib backend.
+        matplotlib.use('Agg')
+        plt.ioff()
+
         # Get info from result table.
         player=_GetVal(result, "player", "GhostRider")
         actype=_GetVal(result, "airframe", "Unknown AC")
@@ -338,6 +346,10 @@ class FunkPlot():
         Creates trapsheet figure for a given player data table.
         """
 
+        # Set matplotlib backend.
+        matplotlib.use('Agg')
+        plt.ioff()
+
         # Trapsheet data.
         try:
             trapsheet=result["trapsheet"]
@@ -422,16 +434,6 @@ class FunkPlot():
         # Set figure size. Needed to have the carrier images in the right place!
         fig.set_size_inches(8, 6)
 
-        # Set matplotlib backend.
-        #matplotlib.use('Agg')
-        #plt.ioff()
-
-        # Annotation box with Carrier data.
-        #offsetbox = TextArea(f'{carriername}\n{carriertype}\nCase {case}\nWind {windondeck}', 
-        #textprops={"alpha": 0.8, "color": "lightsteelblue", "backgroundcolor": PlotColor.FACE.value})
-        #ab = AnnotationBbox(offsetbox, (1.0, 1.08), xycoords='figure fraction', horizontalalignment='right', verticalalignment="top") #, boxcoords='axes fraction')
-        #axs[0].add_artist(ab)
-
         # second annotation relative to the axis limits
         bbox_props = dict(boxstyle="round, pad=0.5", fc=PlotColor.FACE.value, ec="lightsteelblue", lw=1)
 
@@ -450,7 +452,7 @@ class FunkPlot():
             # These are the CVN images:
 
             # Top-down view.
-            axs[0].figure.figimage(self.imageCVNtop,  1000, 370, alpha=0.45, zorder=1, clip_on=True)
+            axs[0].figure.figimage(self.imageCVNtop,  1000, 347, alpha=0.45, zorder=1, clip_on=True)
 
             # Side view.
             axs[0].figure.figimage(self.imageCVNside, 1000, 567, alpha=0.45, zorder=1, clip_on=True)
@@ -471,8 +473,8 @@ class FunkPlot():
         # Set axis.
         ax = axs[1]
 
-        # y-axis limit
-        #ax.set_ylim([-401,801])
+        # y-axis limit.
+        ax.set_ylim([-501,901])
 
         # Line up referece line.
         if angledRunway:

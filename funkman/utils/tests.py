@@ -13,7 +13,7 @@ def getResultStrafe():
 
     # Result.
     resultStrave = {
-        "dataType": "Strafe Result",
+        "command": "moose_strafe_result",
         "player": "funkyfranky",
         "name": "My Target",
         "clock": "9:45:01",
@@ -34,7 +34,7 @@ def getResultBomb():
 
     # Result.
     result={
-        "dataType": "Bomb Result",
+        "command": "moose_bomb_result",
         "name": "Target Name",
         "distance": randint(5,300),
         "radial": randint(1,360),

@@ -50,7 +50,7 @@ class FunkSocket(socketserver.UDPServer):
     UDP socket server. It inherits "socketserver.UDPServer".
     """
 
-    def __init__(self, Host="127.0.0.1", Port=10123) -> None:
+    def __init__(self, Host="127.0.0.1", Port=10042) -> None:
 
         super().__init__((Host, Port), FunkHandler)
 
@@ -104,10 +104,16 @@ class FunkSocket(socketserver.UDPServer):
             print(table)
             print("--------------------------------------")
 
-        # Treat different cases.
-        if "dataType" in table:
+        key="command"
+        textmessage="moose_text"
+        bombresult="moose_bomb_result"
+        straferesult="moose_strafe_result"
+        lsograde="moose_lso_grade"
 
-            if table["dataType"]=="Text Message":
+        # Treat different cases.
+        if key in table:
+
+            if table[key]==textmessage:
                 print("Got text message!")
 
                 # Extract text.
@@ -116,7 +122,7 @@ class FunkSocket(socketserver.UDPServer):
                 # Send text to Discord.
                 self.funkbot.SendText(text, self.channelIDmessage)
 
-            if table["dataType"]=="Bomb Result":
+            if table[key]==bombresult:
                 print("Got bomb result!")
 
                 # Create bomb run figure.
@@ -125,7 +131,7 @@ class FunkSocket(socketserver.UDPServer):
                 # Send figure to Discord.
                 self.funkbot.SendFig(fig, self.channelIDrange)
 
-            elif table["dataType"]=="Strafe Result":
+            elif table[key]==straferesult:
                 print("Got strafe result!")
 
                 # Create strafe run figure.
@@ -134,7 +140,7 @@ class FunkSocket(socketserver.UDPServer):
                 # Send figure to discord.
                 self.funkbot.SendFig(fig, self.channelIDrange)
 
-            elif table["dataType"]=="Trap Sheet":
+            elif table[key]==lsograde:
                 print("Got trap sheet!")
 
                 # Send LSO grade.
