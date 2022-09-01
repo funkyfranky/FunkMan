@@ -9,9 +9,10 @@ import socketserver
 import json
 import os
 
+from concurrent.futures import ThreadPoolExecutor
+
 from ..funkplot.funkplot import FunkPlot
 from ..funkbot.funkbot   import FunkBot
-from ..utils.utils       import _GetVal
 
 class FunkHandler(socketserver.BaseRequestHandler):
     """
@@ -23,11 +24,11 @@ class FunkHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
 
-        # Get data.
-        data = self.request[0].strip()
-
         # Debug message.
         print(f"New message from server {self.client_address[0]}")
+
+        # Get data.
+        data = self.request[0].strip()
 
         # Table data.
         table=json.loads(data)
@@ -45,12 +46,16 @@ class FunkHandler(socketserver.BaseRequestHandler):
         self.server.EvalData(table)
 
 
-class FunkSocket(socketserver.UDPServer):
+class FunkSocket(socketserver.ThreadingUDPServer):
     """
     UDP socket server. It inherits "socketserver.UDPServer".
     """
 
     def __init__(self, Host="127.0.0.1", Port=10042) -> None:
+
+        # Enable reuse, in case the restart was too fast and the port was still in TIME_WAIT.
+        self.allow_reuse_address=True
+        self.max_packet_size=65504        
 
         super().__init__((Host, Port), FunkHandler)
 
@@ -59,6 +64,8 @@ class FunkSocket(socketserver.UDPServer):
 
         self.funkbot=None
         self.funkplot=None
+
+        self.executor = ThreadPoolExecutor(thread_name_prefix='UDPServer')
 
         print(f"FunkSocket: Host={self.host}:{self.port}")
 
@@ -89,11 +96,11 @@ class FunkSocket(socketserver.UDPServer):
         print(f"Starting Socket server {self.host}:{self.port}")
 
         try:
+            #self.executor.submit(self.serve_forever)
             self.serve_forever()
         except:
             print('Keyboard Control+C exception detected, quitting.')
             os._exit(0)
-
 
     def EvalData(self, table):
         """Evaluate data received from socket. You might want to overwrite this function."""
