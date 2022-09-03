@@ -62,7 +62,7 @@ def getResultTrap(trapfile: str):
 
     # Result.
     result={
-        "dataType": "Trap Sheet",
+        "command": "moose_lso_grade",
         "name": "funkyfranky",
         "trapsheet": trapsheet,
         "airframe": 'FA-18C_hornet',

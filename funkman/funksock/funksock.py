@@ -57,6 +57,10 @@ class FunkSocket(socketserver.UDPServer):
         self.host=Host
         self.port=Port
 
+        # Enable reuse, in case the restart was too fast and the port was still in TIME_WAIT.
+        self.allow_reuse_address=True
+        self.max_packet_size=65504
+
         self.funkbot=None
         self.funkplot=None
 

@@ -9,6 +9,8 @@ from discord.ext import commands, tasks
 import threading
 import matplotlib.pyplot as plt
 import io
+
+from funkman.utils.tests import testBomb
 from ..utils.utils import _GetVal
 
 class FunkBot(commands.Bot):
@@ -18,8 +20,11 @@ class FunkBot(commands.Bot):
 
     def __init__(self, Token: str, ChannelID: int, Command_Prefix="!", ImagePath="./funkpics/", DebugLevel=0):
 
+        intents = discord.Intents.all()
+        print(intents)
+
         # Init discord.Client superclass.
-        super().__init__(Command_Prefix)
+        super().__init__(Command_Prefix, intents=intents)
 
         # Get config parameters:
         self.token=str(Token)
@@ -27,6 +32,8 @@ class FunkBot(commands.Bot):
 
         self.debugLevel=DebugLevel
         self.imagePath=ImagePath
+
+        self.InitTestPlots()
 
     def SetCallbackStart(self, Func, *argv, **kwargs):
         """Callback function called at start."""
@@ -60,38 +67,22 @@ class FunkBot(commands.Bot):
         #    print("No callback!")
         #    pass
 
-        # Debug tests.
-        if self.debugLevel>=10:
-            from funkman.utils.tests import testTrap, testBomb, testStrafe, getResultTrap
-            from funkman.funkplot.funkplot import FunkPlot
+        if self.debugLevel>=20:
+            self._TestPlots(self.channelID)
 
-            print("Testing Plots...")
+    async def on_disconnect(self):
+        """
+        Called when the client has disconnected from Discord, or a connection attempt to Discord has failed. This could happen either through the internet being disconnected, 
+        explicit calls to close, or Discord terminating the connection one way or the other.
+        """
+        # Get channel.
+        try:
+            self.channel=self.get_channel(self.channelID)
+        except:
+            print(f"ERROR: Could not get channel with ID={self.channelID}")
 
-            # Init FunkPlot.
-            funkyplot=FunkPlot()
-
-            # Trap sheet files.
-            trapfiles=["./testfiles/Trapsheet-FA-18C_hornet-001.csv", "./testfiles/Trapsheet-FA-18C_hornet-002.csv"]
-
-            for trapfile in trapfiles:
-
-                # Get result from trap file.
-                result=getResultTrap(trapfile)
-
-                # Test LSO embed.
-                self.SendLSOEmbed(result, self.channelID)
-
-                # Test trap.
-                f1, a1=testTrap(funkyplot, trapfile)
-                self.SendFig(f1, self.channelID)
-
-            # Test bomb.
-            f2, a2=testBomb(funkyplot)
-            self.SendFig(f2, self.channelID)
-
-            # Test strafe.
-            f3, a3=testStrafe(funkyplot)            
-            self.SendFig(f3, self.channelID)
+        # Info that bot is online and ready.
+        print('Connected as {0.name} [ID: {0.id}]'.format(self.user))
 
     def Start(self, Threaded=False):
         """
@@ -191,26 +182,26 @@ class FunkBot(commands.Bot):
         theatre=_GetVal(result, "theatre", "Unknown Map")
 
         color=0x00ff00
-        urlIm="https://i.imgur.com/rBKaTVr.png"
+        urlIm="https://i.imgur.com/1bWgcV7.png"
         if type(points)==int:
             if points==0:#
                 color=0x000000 #black
-                urlIm="https://i.imgur.com/6sxWxye.png"
+                urlIm="https://i.imgur.com/rZpu9c0.png"
             elif points==1:
                 color=0xff0000 #red
-                urlIm="https://i.imgur.com/AXY41L0.png"
+                urlIm="https://i.imgur.com/LXgD2Op.png"
             elif points==2:
                 color=0xFFA500 #orange
-                urlIm="https://i.imgur.com/T0DVmPm.png"
+                urlIm="https://i.imgur.com/EjviMBk.png"
             elif points==3:
                 color=0xFFFF00 #yellow
-                urlIm="https://i.imgur.com/s5hpF1o.png"
+                urlIm="https://i.imgur.com/wH0Gjqx.png"
             elif points==4:
                 color=0x00FF00 #green
-                urlIm="https://i.imgur.com/rBKaTVr.png"
+                urlIm="https://i.imgur.com/1bWgcV7.png"
             elif points==5:
                 color=0x0000FF #blue
-                urlIm="https://i.imgur.com/Zp4ci6P.png"
+                urlIm="https://i.imgur.com/6ecFSqo.png"
 
         # Create Embed
         embed = discord.Embed(title="LSO Grade", description=f"Result for {player} at carrier {carriername} [{carriertype}]", color=color)
@@ -240,3 +231,71 @@ class FunkBot(commands.Bot):
 
         # Send to Discord.
         self.SendDiscordFile(fileLSO, ChannelID, embed)
+
+    
+    def InitTestPlots(self):
+        """Init commnds."""
+
+        @self.command()
+        async def TestPlots(ctx: commands.Context):
+            self._TestPlots(ctx.channel.id)
+
+    def _TestTrap(self, ChannelID):
+        from funkman.utils.tests import testTrap, testBomb, testStrafe, getResultTrap
+        from funkman.funkplot.funkplot import FunkPlot
+
+        # Init FunkPlot.
+        funkyplot=FunkPlot()
+
+        # Trap sheet files.
+        trapfiles=["./testfiles/Trapsheet-FA-18C_hornet-001.csv", "./testfiles/Trapsheet-FA-18C_hornet-002.csv"]
+
+        for trapfile in trapfiles:
+
+            # Get result from trap file.
+            result=getResultTrap(trapfile)
+
+            # Test LSO embed.
+            self.SendLSOEmbed(result, ChannelID)
+
+            # Test trap.
+            f1, a1=testTrap(funkyplot, trapfile)
+            self.SendFig(f1, ChannelID)
+
+    def _TestStrafe(self, ChannelID):
+        from funkman.utils.tests import testStrafe
+        from funkman.funkplot.funkplot import FunkPlot
+
+        # Init FunkPlot.
+        funkyplot=FunkPlot()
+
+        # Test strafe.
+        fig, ax=testStrafe(funkyplot)
+        self.SendFig(fig, ChannelID)
+
+    def _TestBomb(self, ChannelID):
+        from funkman.utils.tests import testBomb
+        from funkman.funkplot.funkplot import FunkPlot
+
+        # Init FunkPlot.
+        funkyplot=FunkPlot()
+
+        # Test strafe.
+        fig, ax=testBomb(funkyplot)
+        self.SendFig(fig, ChannelID)
+
+    def _TestPlots(self, ChannelID):
+        from funkman.utils.tests import testTrap, testBomb, testStrafe, getResultTrap
+        from funkman.funkplot.funkplot import FunkPlot
+
+        # Debug info.
+        print("Testing Plots...")
+
+        # Init FunkPlot.
+        funkyplot=FunkPlot()
+
+        self._TestTrap(ChannelID)
+
+        self._TestStrafe(ChannelID)
+
+        self._TestBomb(ChannelID)
