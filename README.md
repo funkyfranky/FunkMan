@@ -2,8 +2,10 @@
  FunkMan is a python program that creates an easy-to-use interface between the DCS scripting environment and a Discord bot via a UDP socket connection.
  This allows you, *e.g.*, to send text messages from DCS to Discord channels.
  
- Furthermore, FunkMan contains special interfaces to the MOOSE classes AIRBOSS and RANGE. For the AIRBOSS class, you get embeded messages when a player receives an LSO
+ Furthermore, FunkMan contains special interfaces to the [MOOSE](https://github.com/FlightControl-Master/MOOSE) classes [AIRBOSS](https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Ops.Airboss.html) and [RANGE](https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Functional.Range.html). For the AIRBOSS class, you get embeded messages when a player receives an LSO
  grade and fancy images of the trap sheet. For the RANGE class, images of the bombing impact point are send to Discord as well as as summary of a strafing run.
+
+Note that this program is based on the [HypeMan](https://github.com/madmoney99/HypeMan-Legacy) code and credit goes to the original author.
 
 ## Prerequisite
 Before you install FunkMan you need to know which other software is required for FunkMan to work. As FunkMan is a python program, it obviously needs python installed and some common libraries.
@@ -98,9 +100,9 @@ Connected as FunkBot [ID: 1005000044782563441]
 ```
 
 ### DCS Setup
-For the following scripts to work, you have to "de-sanatize" some parts of the `MissionScripting.lua`, which is located in the `{DCS_INSTALLATION}/Scripts/` folder.
+For the following scripts to work, you have to "de-sanitize" some parts of the `MissionScripting.lua`, which is located in the `{DCS_INSTALLATION}/Scripts/` folder.
 The file should look like this:
-```
+```lua
 do
 	--sanitizeModule('os')
 	--sanitizeModule('io')
@@ -110,6 +112,7 @@ do
 	--_G['package'] = nil
 end
 ```
+**Note** that you have to repeat this step after each DCS update (or repair) as DCS will restore the sanitized version of the file.
 
 ### Text Messages
 Sending simple text messages from the DCS scripting environment is pretty easy.
@@ -126,7 +129,7 @@ Sending LSO grades and trapsheets from the [AIRBOSS](https://flightcontrol-maste
 `myAirboss:SetFunkManOn()`.
 
 So for example:
-```
+```lua
 local myAirboss=AIRBOSS:New("USS Stennis", "Stennis")
 myAirboss:SetFunkManOn()
 -- More Config stuff here...
@@ -138,12 +141,22 @@ Note that the default port `10042` is used here. If you want to change it, you h
 #### Trapsheet Example
 ![Example_Airboss_Trapsheet](funkpics/Example_Airboss_Trapsheet.png)
 
+In the picture you can see that player "New Callsign" trapped in an F/A-18C Hornet and got an LSO grade `--` (2 Points).
+
+**Blue box:** The carrier name was CVN-74 and it was the USS Stennis. It was a Case 1 recovery. The wind on deck was 27.4 knots. The player caught wire 1 and was 18.2 seconds in the groove.
+
+**Upper image:** This displays the glide slope as a function of the distance to the boat. The blue line is the players result and the grey line shows the optimal glide slope. The y-axis is in feet.
+
+**Middle image:** This part shows the line up in a top-to-bottom view. The green line shows the players actual position and the grey line shows the center line. The y-axis is in feet.
+
+**Lower image:** Here the angle-of-attack (AoA) is shown. The dashed green line shows the optimal AoA and the red dashed lines show the accaptable min/max AoA values. The player's AoA is shown as solid green line.
+
 ### Range
 Sending bombing and strafing results from the [RANGE](https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Functional.Range.html) class is done by adding the command
 `myRange:SetFunkManOn()`.
 
 So for example:
-```
+```lua
 local myRange=RANGE:New("Goldwater Range")
 myRange:SetFunkManOn()
 -- More Config stuff here...
@@ -155,8 +168,22 @@ Note that the default port `10042` is used here. If you want to change it, you h
 #### Bombing Result Example
 ![Example_Range_Bombing](funkpics/Example_Range_Bomb.png)
 
+In the picture you can see that player "New Callsign" dropped a Mk 83 bomb at the range named "Reef". The target name was "Reef Bombing Target Alpha-1".
+
+**Red box:** The distance to the target was `r=24` meters at an angle of `phi=159°`. The red arrow also displays the heading in the North Up figure.
+
+**Green box:** The player used an F/A-18C Hornet and dropped the bomb at an altitude of `h=396 ft` and a speed of `v=482 kts` flying heading `psi=341°`. The heading is also depicted as a green arrow in the North Up figure. From the red and green arrows, you can derive whether the bomb impacted long, short, left or right.
+
+Furthermore, you get information about the map, mission time/date and actual time and date of the bombing run.
+
 #### Strafing Result Example
 ![Example_Range_Strafing](funkpics/Example_Range_Strafe.png)
+
+In the picture you can see that player "New Callsign" performed a strafing run at range "Reef" on target "Reef Strafe Pit 1" in an F/A-18C Hornet.
+
+**Green Box:** The player fired 530 rounds during the run and hit 9 times. This gives an accuracy of 1.7%. This pass was invalid, because he still fired after passing the fould line.
+
+The rounds that hit are displayed as bullet holes in the center area of the target image. The rounds that did not hit are dipicted as blue crosses in the outer ring area.
 
 ## Subpackages
 As a side note, FunkMan contains three subpackages:
