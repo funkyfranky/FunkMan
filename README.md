@@ -23,7 +23,6 @@ You need the `Moose.lua` file from the MOOSE [develop branch](https://github.com
 Finally, you need to create a discord bot. There are plenty of youtube videos around, which explain how to do this.
 Go to the http://discord.com/developers site to create a bot.
 
-
 ## Installation
 There are several ways to obtain the FunkMan code. You can use `git clone` if you are familiar with git
 or download the [latest release](https://github.com/funkyfranky/FunkMan/releases) as zip file and unzip
@@ -96,6 +95,20 @@ Starting Socket server 127.0.0.1:10042
 2022-09-04 15:15:32 INFO discord.client logging in using static token
 2022-09-04 15:15:32 INFO discord.gateway Shard ID None has connected to Gateway (Session ID: a5c59cb119409c066f008a4a1dbc4bca).
 Connected as FunkBot [ID: 1005000044782563441]
+```
+
+### DCS Setup
+For the following scripts to work, you have to "de-sanatize" some parts of the `MissionScripting.lua`, which is located in the `{DCS_INSTALLATION}/Scripts/` folder.
+The file should look like this:
+```
+do
+	--sanitizeModule('os')
+	--sanitizeModule('io')
+	--sanitizeModule('lfs')
+	--_G['require'] = nil
+	_G['loadlib'] = nil
+	--_G['package'] = nil
+end
 ```
 
 ### Text Messages
