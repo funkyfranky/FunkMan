@@ -21,7 +21,7 @@ You need the `Moose.lua` file from the MOOSE [develop branch](https://github.com
 
 ### Discord Bot
 Finally, you need to create a discord bot. There are plenty of youtube videos around, which explain how to do this.
-Go to the http://discord.com/developers site to do this.
+Go to the http://discord.com/developers site to create a bot.
 
 
 ## Installation
@@ -122,6 +122,9 @@ myAirboss:Start()
 
 Note that the default port `10042` is used here. If you want to change it, you have to pass it as parameter to the [SetFunkManOn](https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Ops.Airboss.html##(AIRBOSS).SetFunkManOn) function.
 
+#### Trapsheet Example
+![Example_Airboss_Trapsheet](funkpics/Example_Airboss_Trapsheet.png)
+
 ### Range
 Sending bombing and strafing results from the [RANGE](https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Functional.Range.html) class is done by adding the command
 `myRange:SetFunkManOn()`.
@@ -135,6 +138,12 @@ myRange:Start()
 ```
 
 Note that the default port `10042` is used here. If you want to change it, you have to pass it as parameter to the [SetFunkManOn](https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Functional.Range.html##(RANGE).SetFunkManOn) function.
+
+#### Bombing Result Example
+![Example_Range_Bombing](funkpics/Example_Range_Bomb.png)
+
+#### Strafing Result Example
+![Example_Range_Strafing](funkpics/Example_Range_Strafe.png)
 
 ## Subpackages
 As a side note, FunkMan contains three subpackages:
