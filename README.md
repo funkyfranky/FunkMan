@@ -38,7 +38,7 @@ So after downloading the FunkMan code, you first need to adjust the `FunkMan.ini
 are the Token of your Discord bot and the ID of Discord channel(s), where FunkMan will send messages and images to.
 
 ## Config File
-The config file consists of multiple section each starting with square brackets.
+The config file consists of multiple sections, each starting with square brackets.
 
 ### [DEFAULT]
 This sections contains a parameter for debugging:
@@ -50,6 +50,7 @@ This section contains information about the Discord bot parmeters:
 - `CHANNELID_MAIN`: The main channel ID used for all messages by default.
 - `CHANNELID_RANGE`: (Optional) Channel ID where RANGE messages are send to.
 - `CHANNELID_AIRBOSS`: (Optional) Channel ID where AIRBOSS messages are send to.
+The parameters `CHANNELID_RANGE` and `CHANNELID_AIRBOSS` are optional and allow you to send the information coming from AIRBOSS and RANGE to separate channles.
 
 ### [FUNKSOCK]
 This section contains information about the UDP socket:
@@ -84,7 +85,18 @@ IMAGEPATH=./funkpics/
 Once you have configured FunkMan with the ini file, FunkMan is started by simply clicking the `FunkMan.bat` file.
 If everything is setup correctly, you will obtain the following output telling you that you bot has connected:
 
-**INSERT PICTURE HERE**
+```
+Hello, my name is FunkMan. I'm at your service!
+Reading config file ./FunkMan.ini
+Init FunkPlot: Reading images from ./funkpics/...
+FunkSocket: Host=127.0.0.1:10042
+Starting threaded discord bot!
+Starting Bot Client with Token MTAwN...
+Starting Socket server 127.0.0.1:10042
+2022-09-04 15:15:32 INFO discord.client logging in using static token
+2022-09-04 15:15:32 INFO discord.gateway Shard ID None has connected to Gateway (Session ID: a5c59cb119409c066f008a4a1dbc4bca).
+Connected as FunkBot [ID: 1005000044782563441]
+```
 
 ### Text Messages
 Sending simple text messages from the DCS scripting environment is pretty easy.
@@ -125,9 +137,8 @@ myRange:Start()
 Note that the default port `10042` is used here. If you want to change it, you have to pass it as parameter to the [SetFunkManOn](https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Functional.Range.html##(RANGE).SetFunkManOn) function.
 
 ## Subpackages
-FunkMan contains three subpackages:
+As a side note, FunkMan contains three subpackages:
 - `FunkSock`: A socket server that handles data received via an UDP connection
 - `FunkBot`: An interface to Discord bots using discord.py.
 - `FunkPlot`: Contains a class to make pretty figures for the `MOOSE` `RANGE` and `AIRBOSS`classes using matplotlib.
-
 You can use each of these subpackges on its own or in combination with the `FunkMan` package.
