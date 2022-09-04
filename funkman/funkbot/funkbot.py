@@ -10,7 +10,6 @@ import threading
 import matplotlib.pyplot as plt
 import io
 
-from funkman.utils.tests import testBomb
 from ..utils.utils import _GetVal
 
 class FunkBot(commands.Bot):
@@ -20,20 +19,20 @@ class FunkBot(commands.Bot):
 
     def __init__(self, Token: str, ChannelID: int, Command_Prefix="!", ImagePath="./funkpics/", DebugLevel=0):
 
+        # Intents.
         intents = discord.Intents.all()
-        print(intents)
 
         # Init discord.Client superclass.
         super().__init__(Command_Prefix, intents=intents)
 
-        # Get config parameters:
+        # Set config parameters:
         self.token=str(Token)
         self.channelID=int(ChannelID)
-
         self.debugLevel=DebugLevel
         self.imagePath=ImagePath
 
-        self.InitTestPlots()
+        # Init bot commands.
+        self._InitCommands()
 
     def SetCallbackStart(self, Func, *argv, **kwargs):
         """Callback function called at start."""
@@ -233,15 +232,27 @@ class FunkBot(commands.Bot):
         self.SendDiscordFile(fileLSO, ChannelID, embed)
 
     
-    def InitTestPlots(self):
-        """Init commnds."""
+    def _InitCommands(self):
+        """Init commands."""
 
-        @self.command()
+        @self.command(aliases=['testplots'])
         async def TestPlots(ctx: commands.Context):
             self._TestPlots(ctx.channel.id)
 
+        @self.command(aliases=['testtrap'])
+        async def TestTrap(ctx: commands.Context):
+            self._TestTrap(ctx.channel.id)
+
+        @self.command(aliases=['teststrafe'])
+        async def TestStrafe(ctx: commands.Context):
+            self._TestStrafe(ctx.channel.id)
+
+        @self.command(aliases=['testbomb'])
+        async def TestBomb(ctx: commands.Context):
+            self._TestBomb(ctx.channel.id)
+
     def _TestTrap(self, ChannelID):
-        from funkman.utils.tests import testTrap, testBomb, testStrafe, getResultTrap
+        from funkman.utils.tests import testTrap, getResultTrap
         from funkman.funkplot.funkplot import FunkPlot
 
         # Init FunkPlot.
@@ -285,17 +296,15 @@ class FunkBot(commands.Bot):
         self.SendFig(fig, ChannelID)
 
     def _TestPlots(self, ChannelID):
-        from funkman.utils.tests import testTrap, testBomb, testStrafe, getResultTrap
-        from funkman.funkplot.funkplot import FunkPlot
 
         # Debug info.
         print("Testing Plots...")
 
-        # Init FunkPlot.
-        funkyplot=FunkPlot()
-
+        # Test trapsheet.
         self._TestTrap(ChannelID)
 
+        # Test strafe.
         self._TestStrafe(ChannelID)
 
+        # Test bomb.
         self._TestBomb(ChannelID)

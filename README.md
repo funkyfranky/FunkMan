@@ -5,12 +5,24 @@
  Furthermore, FunkMan contains special interfaces to the MOOSE classes AIRBOSS and RANGE. For the AIRBOSS class, you get embeded messages when a player receives an LSO
  grade and fancy images of the trap sheet. For the RANGE class, images of the bombing impact point are send to Discord as well as as summary of a strafing run.
 
-## Requirements
-You have to
-- De-sanitize the MissionScripting.lua file in your DCS install directory.
-- MOOSE develop branch
-- [https://www.python.org/](Python 3)
-- [https://discordpy.readthedocs.io/en/stable/](discord.py)
+## Prerequisite
+Before you install FunkMan you need to know which other software is required for FunkMan to work. As FunkMan is a python program, it obviously needs python installed and some common libraries.
+
+### Python
+You can get python from [https://www.python.org/](python.org). During the installation, you should also install `pip` when asked and add the install directory to the windows `PATH` environment variable.
+
+The additional libraries can be installed with pip. These are:
+- [https://discordpy.readthedocs.io/en/stable/](discord.py): `pip install discord`
+- [https://matplotlib.org/](matplotlib): `pip install matplotlib`
+- [https://numpy.org/](numpy): `pip install numpy`
+
+### MOOSE
+You need the `Moose.lua` file from the MOOSE [https://github.com/FlightControl-Master/MOOSE_INCLUDE/tree/develop/Moose_Include_Static](develop branch).
+
+### Discord Bot
+Finally, you need to create a discord bot. There are plenty of youtube videos around, which explain how to do this.
+Go to the http://discord.com/developers site to do this.
+
 
 ## Installation
 There are several ways to obtain the FunkMan code. You can use `git clone` if you are familiar with git
@@ -71,6 +83,44 @@ Once you have configured FunkMan with the ini file, FunkMan is started by simply
 If everything is setup correctly, you will obtain the following output telling you that you bot has connected:
 
 **INSERT PICTURE HERE**
+
+### Text Messages
+Sending simple text messages from the DCS scripting environment is pretty easy.
+In your lua script you need to create a new [https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Utilities.Socket.html](SOCKET) object:
+```
+mySocket=SOCKET:New()
+mySocket:SendText("Red Helicopter in Southern Zone!")
+```
+This works as long as you use the default port, which is `10042`. If you changed that port in the `FunkMan.ini` file,
+you need to pass that as parameter in the [https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Utilities.Socket.html##(SOCKET).New](:New) function, *e.g.* `mySocket=SOCKET:New(10081)`.
+
+### Airboss
+Sending LSO grades and trapsheets from the [https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Ops.Airboss.html](AIRBOSS) class is as simple as adding the command
+`myAirboss:SetFunkManOn()`.
+
+So for example:
+```
+local myAirboss=AIRBOSS:New("USS Stennis", "Stennis")
+myAirboss:SetFunkManOn()
+-- More Config stuff here...
+myAirboss:Start()
+```
+
+Note that the default port `10042` is used here. If you want to change it, you have to pass it as parameter to the [https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Ops.Airboss.html##(AIRBOSS).SetFunkManOn](SetFunkManOn) function.
+
+### Range
+Sending bombing and strafing results from the [https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Functional.Range.html](RANGE) class is done by adding the command
+`myRange:SetFunkManOn()`.
+
+So for example:
+```
+local myRange=RANGE:New("Goldwater Range")
+myRange:SetFunkManOn()
+-- More Config stuff here...
+myRange:Start()
+```
+
+Note that the default port `10042` is used here. If you want to change it, you have to pass it as parameter to the [https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Functional.Range.html##(RANGE).SetFunkManOn](SetFunkManOn) function.
 
 ## Subpackages
 FunkMan contains three subpackages:
