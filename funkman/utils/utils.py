@@ -52,7 +52,7 @@ def ReadTrapsheet(filename: str) -> dict:
                             fvalue=fvalue*0.3048
                         d[k] = np.append(d[k], fvalue)
                     except ValueError:
-                        d[k]=svalue
+                        d[k]=np.append(d[k], svalue) #svalue
     except:
         print('ERROR!')
 

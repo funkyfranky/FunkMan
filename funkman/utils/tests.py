@@ -10,6 +10,8 @@ def getResultStrafe():
 
     Nfired=randint(1, 500)
     Nhit=randint(0, Nfired)
+    Nfired=5
+    Nhit=5
 
     # Result.
     resultStrave = {
@@ -59,28 +61,63 @@ def getResultTrap(trapfile: str):
 
     # Debug info.
     #print(trapsheet)
+    #print(trapsheet.keys())
+    try:
+        grade=trapsheet.get("Grade")[-1]
+    except:
+        grade="N/A"
+    try:
+        details=trapsheet.get("Details")[-1]
+    except:
+        details="N/A"
+    try:
+        points=trapsheet.get("Points")[-1]
+    except:
+        points=0
+
+    details.strip()
+    if details.strip()=="":
+        details="Unicorn"
+
+    rwyangle=-9
+    wire=randint(1,4)
+    carriername="USS Stennis"
+    carriertype="CVN-74"
+    landingdist=-165+79  #sterndist+wire3
+    if "Tarawa" in trapfile:
+        rwyangle=0
+        wire=None
+        carriername="Tarawa"
+        carriertype="LHA"
+        landingdist=-125+69 #sterndist+landingpos
+
+    airframe='FA-18C_hornet'
+    if "AV8B" in trapfile:
+        airframe="AV8BNA"
 
     # Result.
     result={
         "command": "moose_lso_grade",
-        "name": "funkyfranky",
+        "name": "Ghostrider",
         "trapsheet": trapsheet,
-        "airframe": 'FA-18C_hornet',
+        "airframe": airframe,
         "mitime": "05:00:01",
         "midate":"2022-04-01",
         "wind": 25.13432432432423,
-        "carriertype": "CVN-74",
-        "carriername": "USS Stennis",
-        "carrierrwy": -9,
+        "carriertype": carriertype,
+        "carriername": carriername,
+        "carrierrwy": rwyangle,
+        "landingdist": landingdist,
         "theatre": "Kola",
         "Tgroove": randint(10, 20),
-        "wire": randint(1,4),
         "case": randint(1,3),
-        "grade": "OK",
-        "finalscore": 2,
-        "points": 3,
-        "details": "(LUL)X (F)IM  LOLULIC LOLULAR"
+        "grade": grade or "OK",
+        "finalscore": points or 2,
+        "points": points or 3,
+        "details": details or "(LUL)X (F)IM  LOLULIC LOLULAR"
     }
+    if wire:
+        result["wire"]=wire
 
     #print(result)
 

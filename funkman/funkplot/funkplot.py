@@ -65,11 +65,15 @@ class FunkPlot():
         self.imageCVNtop     = plt.imread(ImagePath+'CarrierCVN_TopDown.png')
 
         self.imageLHAside    = plt.imread(ImagePath+'CarrierLHA_Side.png')
-        self.imageLHAtop     = plt.imread(ImagePath+'CarrierLHA_Side.png')
+        self.imageLHAtop     = plt.imread(ImagePath+'CarrierLHA_TopDown.png')
 
         self.imageCrater     = plt.imread(ImagePath+"Crater.png")
         self.imageNorthUp    = plt.imread(ImagePath+"NorthUp.png")
         self.imageBullet     = plt.imread(ImagePath+"BulletHole.png")
+
+        self.imageUnicorn1   = plt.imread(ImagePath+"Unicorn1.png")
+        self.imageUnicorn2   = plt.imread(ImagePath+"Unicorn2.png")
+        #self.imageUnicorn3   = plt.imread(ImagePath+"Unicorn3.png")
 
 
     def _GetAoA(self, actype: str):
@@ -260,6 +264,10 @@ class FunkPlot():
         # Set size of figure.
         fig.set_size_inches(8, 6)
 
+        #nx = int(fig.get_figwidth() * fig.dpi)
+        #ny = int(fig.get_figheight() * fig.dpi) 
+        #pos1 = ax.get_position() 
+
         # Create title.
         title=str(f"Strafing result of {player} [{actype}]")
         title+=str(f'\n{_GetVal(result, "rangename", "Unknown Range")}: {_GetVal(result, "name", "Unknown Target")}')
@@ -280,7 +288,7 @@ class FunkPlot():
         # Read strafe pit image.        
         plt.imshow(self.imageStrafePit, interpolation='none', origin='upper', extent=[-zmax, zmax, -zmax, zmax], clip_on=True)
 
-        for _ in range(roundsHit):
+        for _ in range(1): #(roundsHit):
 
             r=np.random.randint(0,100)
             p=np.random.randint(0,360)
@@ -289,11 +297,12 @@ class FunkPlot():
             x,y=self._Polar2Cart(r, p)
             
             # Plot red "x" inside.
-            #ax.plot(x, y, "rX", zorder=15, alpha=0.5)
+            #ax.plot(0, 0, "rX", zorder=15, alpha=0.5)
 
-            # Crater image.
+            # Bullet image.
             bullet=10
             plt.imshow(self.imageBullet, interpolation='none', origin='upper', extent=[x-bullet, x+bullet, y-bullet, y+bullet], clip_on=True)
+            #fig.figimage(self.imageBullet,  0, 0, alpha=0.45, zorder=100, clip_on=True)
 
         for _ in range(roundsFired-roundsHit):
             r=np.random.randint(150,200)
@@ -305,6 +314,11 @@ class FunkPlot():
             # Plot blue "X" outside.
             ax.plot(x, y, "bX", zorder=15, alpha=0.5)
 
+        # Plot something outside to have the bullet image right.
+        ax.plot(-zmax, -zmax, "rX", zorder=15, alpha=0.0)
+        ax.plot(-zmax, +zmax, "rX", zorder=15, alpha=0.0)
+        ax.plot(+zmax, -zmax, "rX", zorder=15, alpha=0.0)
+        ax.plot(+zmax, +zmax, "rX", zorder=15, alpha=0.0)
 
         Nfired=_GetVal(result, "roundsFired", "?")
         Nhits=_GetVal(result, "roundsHit", "?")
@@ -390,6 +404,7 @@ class FunkPlot():
 
         carriertype=_GetVal(result, "carriertype", "?")
         carriername=_GetVal(result, "carriername", "?")
+        landingdist=_GetVal(result, "landingdist", -86)
         windondeck=_GetVal(result, "wind", "?", 1)
         missiontime=_GetVal(result, "mitime", "?")
         missiondate=_GetVal(result, "midate", "?")
@@ -418,15 +433,18 @@ class FunkPlot():
                               [np.sin(theta),  np.cos(theta)]])
 
         # X-Y array in NM
-        dx = 20
-        dy = 20
+        dx = landingdist
+        if angledRunway:
+            dy = 9.5 # Translate perpendicular so that the y=0 corresponds to the stern coordinate.
+        else:
+            dy = 8 #35
         xy = np.array([X+dx, Y+dy])*meter2nm # convert to NM
 
         # Rotate grid
         xy = np.dot(rotMatrix, xy)
 
-        X=xy[0]
-        Y=xy[1]
+        X=xy[0]  # X in NM
+        Y=xy[1]  # Y in NM
 
         # Create subplot figure and axes.
         fig, axs = plt.subplots(3, 1, sharex=True, facecolor=PlotColor.FACE.value, dpi=150)
@@ -437,7 +455,10 @@ class FunkPlot():
         # second annotation relative to the axis limits
         bbox_props = dict(boxstyle="round, pad=0.5", fc=PlotColor.FACE.value, ec="lightsteelblue", lw=1)
 
-        carrierinfo=str(f"{carriername}\n{carriertype}\nCase {case}\nWind {windondeck}\n{wire} wire\nT$_G$={Tgroove}")
+        if angledRunway:
+            carrierinfo=str(f"{carriername}\n{carriertype}\nCase {case}\nWind {windondeck}\n{wire} wire\nT$_G$={Tgroove}")
+        else:
+            carrierinfo=str(f"{carriername}\n{carriertype}\nCase {case}\nWind {windondeck}\nT$_G$={Tgroove}")
         plt.annotate(carrierinfo, xy=(0.99, 0.98), xycoords='figure fraction', alpha=0.6, color="lightsteelblue", horizontalalignment='right', verticalalignment="top", bbox=bbox_props)
 
         # Mission date at left bottom
@@ -451,20 +472,57 @@ class FunkPlot():
         if angledRunway:
             # These are the CVN images:
 
-            # Top-down view.
-            axs[0].figure.figimage(self.imageCVNtop,  1000, 347, alpha=0.45, zorder=1, clip_on=True)
-
             # Side view.
-            axs[0].figure.figimage(self.imageCVNside, 1000, 567, alpha=0.45, zorder=1, clip_on=True)
+            axs[0].figure.figimage(self.imageCVNside, 930, 557, alpha=0.45, zorder=1, clip_on=True)
+
+            # Top-down view.
+            axs[0].figure.figimage(self.imageCVNtop,  930, 347, alpha=0.45, zorder=1, clip_on=True)
         else:
             # These are the LHA images:
 
+            # Side view for the glideslope plot.
+            axs[0].figure.figimage(self.imageLHAside,  910, 560, alpha=0.75, zorder=1, clip_on=True)
+
             # Top-down view.
-            axs[0].figure.figimage(self.imageLHAtop,   940, 320, alpha=0.75, zorder=1, clip_on=True)
+            axs[0].figure.figimage(self.imageLHAtop,   910, 340, alpha=0.75, zorder=1, clip_on=True)
 
-            # side view for the glideslope plot
-            axs[0].figure.figimage(self.imageLHAside,  930, 567, alpha=0.75, zorder=1, clip_on=True)
+        if grade=="_OK_":
+            fig.figimage(self.imageUnicorn2, 550, 450)
+        elif grade=="OK":
+            fig.figimage(self.imageUnicorn1, 550, 450)
 
+        """
+        Glide Slope
+        """
+        # Set axis.
+        ax = axs[0]
+
+        # Y-axis limit.
+        ax.set_ylim([-20,580])  #Glideslope Reference scale from 0 to 650 feet
+
+        # No bottom line.
+        ax.spines['bottom'].set_visible(False)        
+
+        if angledRunway:
+            gs=math.radians(3.5) # Glide slope [rad]
+            y0=2*meter2feet
+        else:
+            gs=math.radians(3.0) # Glide slope [rad]
+            y0=50#50+2*meter2feet
+
+        # Glide Slope Reference line
+        _X=np.linspace(0, 1.2)
+        _Y=nm2feet*_X*np.tan(gs)+y0
+        ax.plot(_X,_Y, PlotColor.REFERENCE.value, linewidth=1.0, alpha=0.8)
+
+        # Actual data with glow.
+        ax.plot(X, ALT, 'b',  linewidth=8, alpha=0.1)   #"glow" effect arond the glideslope line
+        ax.plot(X, ALT, 'b',  linewidth=5, alpha=0.1)   #"glow" effect arond the glideslope line
+        ax.plot(X, ALT, 'b',  linewidth=3, alpha=0.15)  #"glow" effect arond the glideslope line
+        ax.plot(X, ALT, 'w-', linewidth=1, alpha=0.45)  #"glow" effect arond the glideslope line
+
+        # Add text.
+        ax.text(xpoint, 410, "Glide Slope", color=PlotColor.LABEL.value, fontsize=xpointsize, alpha=0.5)
 
         """
         Line Up
@@ -474,19 +532,21 @@ class FunkPlot():
         ax = axs[1]
 
         # y-axis limit.
-        ax.set_ylim([-501,901])
+        if angledRunway:
+            ax.set_ylim([-501,901])
+        else:
+            ax.set_ylim([-301,601])
 
         # Line up referece line.
         if angledRunway:
-            m1 = np.array(ax.get_xlim())
-            m1[0]=0
-            m2=[0, 0]
+            y0=0
         else:
-            m1 = np.array(ax.get_xlim())
-            m1[0]=0
-            m2=[50, 50]
+            y0=35*meter2feet #*feet2meter # 100 ft abeam
 
-        ax.plot(m1, m2, PlotColor.REFERENCE.value, linewidth=2, alpha=0.8)
+        # Glide Slope Reference line
+        _X=np.linspace(0, 1.2)
+        _Y=np.array([y0]*_X.shape[0])
+        ax.plot(_X, _Y, PlotColor.REFERENCE.value, linewidth=2, alpha=0.8)
 
         # Plot lineup with glow.
         ax.plot(X, -nm2feet*Y, 'g',  linewidth=16, alpha=0.10)
@@ -496,37 +556,6 @@ class FunkPlot():
 
         # Add text "Lineup"
         ax.text(xpoint, 510, "Lineup", color=PlotColor.LABEL.value, fontsize=xpointsize, alpha=0.5)
-
-        """
-        Glide Slope
-        """
-        # Set axis.
-        ax = axs[0]
-
-        # Y-axis limit.
-        ax.set_ylim([-1,650])  #Glideslope Reference scale from 0 to 650 feet
-
-        if angledRunway:
-            zt = nm2feet*X*np.tan(math.radians(3.5))
-            gx = 0
-            gz = 40
-        else:
-            zt = nm2feet*X*np.tan(math.radians(3.5))
-            gx = 0
-            gz = 40
-
-
-        # Glide Slope Reference line
-        ax.plot(X+gx, zt+gz, PlotColor.REFERENCE.value, linewidth=1.1, alpha=1)
-
-        # Actual data with glow.
-        ax.plot(X, ALT+gz+20, 'b',  linewidth=8, alpha=0.1)   #"glow" effect arond the glideslope line
-        ax.plot(X, ALT+gz+20, 'b',  linewidth=5, alpha=0.1)   #"glow" effect arond the glideslope line
-        ax.plot(X, ALT+gz+20, 'b',  linewidth=3, alpha=0.15)  #"glow" effect arond the glideslope line
-        ax.plot(X, ALT+gz+20, 'w-', linewidth=1, alpha=0.45)  #"glow" effect arond the glideslope line
-
-        # Add text.
-        ax.text(xpoint, 410, "Glide Slope", color=PlotColor.LABEL.value, fontsize=xpointsize, alpha=0.5)
 
         """
         AoA
@@ -576,7 +605,8 @@ class FunkPlot():
             # Set background color
             ax.set_facecolor(PlotColor.FACE.value)
             # Set x-axis limit.
-            ax.set_xlim([0.001, 1.2])
+            #ax.set_xlim([0.001, 1.2])
+            ax.set_xlim([-0.1, 1.01])
             # Set grid.
             ax.grid(linestyle='-', linewidth='0.5', color=PlotColor.GRID.value)
             # Set tick parameters.
@@ -602,6 +632,6 @@ class FunkPlot():
         fig.suptitle(title, fontsize=12, color=PlotColor.LABEL.value)
 
         # Show plot.
-        #plt.show()
+        #plt.savefig("trapsheet.png")
 
         return fig, axs

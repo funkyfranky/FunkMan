@@ -179,6 +179,11 @@ class FunkBot(commands.Bot):
         missiontime=_GetVal(result, "mitime", "?")
         missiondate=_GetVal(result, "midate", "?")
         theatre=_GetVal(result, "theatre", "Unknown Map")
+        theta=_GetVal(result, "carrierrwy", -9)
+
+        lsoPic="LSO.png"
+        if abs(theta)<0.1:
+            lsoPic="LSO_Vstol.png"
 
         color=0x00ff00
         urlIm="https://i.imgur.com/1bWgcV7.png"
@@ -206,7 +211,7 @@ class FunkBot(commands.Bot):
         embed = discord.Embed(title="LSO Grade", description=f"Result for {player} at carrier {carriername} [{carriertype}]", color=color)
 
         # Create file.
-        fileLSO = discord.File(self.imagePath+"LSO.png", filename="lso.png")
+        fileLSO = discord.File(self.imagePath+lsoPic, filename="lso.png")
 
         # Images.
         embed.set_image(url="attachment://lso.png")
@@ -259,7 +264,11 @@ class FunkBot(commands.Bot):
         funkyplot=FunkPlot()
 
         # Trap sheet files.
-        trapfiles=["./testfiles/Trapsheet-FA-18C_hornet-001.csv", "./testfiles/Trapsheet-FA-18C_hornet-002.csv"]
+        trapfiles=[
+            "./testfiles/Trapsheet-FA-18C_hornet-001.csv", 
+            "./testfiles/Trapsheet-FA-18C_hornet-002.csv",
+            "./testfiles/SH_unicorn_AIRBOSS-trapsheet-Yoda_FA-18C_hornet-0001.csv",
+            "./testfiles/Trapsheet-AV8B_Tarawa-001.csv"]
 
         for trapfile in trapfiles:
 

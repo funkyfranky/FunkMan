@@ -5,7 +5,7 @@ A package to link DCS and Discord via MOOSE.
 """
 
 __author__  = "funkyfranky"
-__version__ = "0.5.1"
+__version__ = "0.6.0"
 
 #print("__init__ main")
 

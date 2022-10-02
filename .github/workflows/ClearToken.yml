@@ -1,0 +1,35 @@
+name: Clear Token
+
+on:
+  [workflow_dispatch]
+
+jobs:
+
+  build:  
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2 # checkout the repository content to github runner
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9' # install the python version needed
+          
+      # - name: Install Python Packages
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     pip install numpy
+          
+      - name: Clear Token
+        run: |
+          echo "Clearing token!"
+          python cleartoken.py
+
+      - name: Commit Cleared Token
+        run: |
+          git config --global user.name 'Frank'
+          git config --global user.email 'frank@inter-zone.de'
+          git commit -am "Cleared Bot Token"
+          git push
