@@ -355,7 +355,7 @@ class FunkPlot():
         return fig, ax
 
 
-    def PlotTrapSheet(self, result):
+    def PlotTrapSheet(self, result, filename=None):
         """
         Creates trapsheet figure for a given player data table.
         """
@@ -632,6 +632,7 @@ class FunkPlot():
         fig.suptitle(title, fontsize=12, color=PlotColor.LABEL.value)
 
         # Show plot.
-        #plt.savefig("trapsheet.png")
+        if filename:
+            plt.savefig(filename)
 
         return fig, axs

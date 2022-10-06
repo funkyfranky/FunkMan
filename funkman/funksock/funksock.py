@@ -115,7 +115,7 @@ class FunkSocket(socketserver.UDPServer):
         lsograde="moose_lso_grade"
 
         # Treat different cases.
-        if key in table:
+        if key in table or key=="sever_name":
 
             if table[key]==textmessage:
                 print("Got text message!")
