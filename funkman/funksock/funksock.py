@@ -11,7 +11,6 @@ import os
 
 from ..funkplot.funkplot import FunkPlot
 from ..funkbot.funkbot   import FunkBot
-from ..utils.utils       import _GetVal
 
 class FunkHandler(socketserver.BaseRequestHandler):
     """
@@ -27,7 +26,7 @@ class FunkHandler(socketserver.BaseRequestHandler):
         data = self.request[0].strip()
 
         # Debug message.
-        print(f"New message from server {self.client_address[0]}")
+        #print(f"New message from server {self.client_address[0]}")
 
         # Table data.
         table=json.loads(data)
@@ -99,7 +98,7 @@ class FunkSocket(socketserver.UDPServer):
             os._exit(0)
 
 
-    def EvalData(self, table):
+    def EvalData(self, table: dict):
         """Evaluate data received from socket. You might want to overwrite this function."""
 
         # Debug info.
@@ -114,20 +113,28 @@ class FunkSocket(socketserver.UDPServer):
         straferesult="moose_strafe_result"
         lsograde="moose_lso_grade"
 
-        # Treat different cases.
-        if key in table or key=="sever_name":
+        table.get
 
-            if table[key]==textmessage:
-                print("Got text message!")
+        # Treat different cases.
+        if key in table:
+
+            command=table.get(key, "")
+            server=table.get("server_name", "unknown")
+
+            # Debug info
+            print(f"Got {command} from server {server}!")
+
+            if command==textmessage:
+                #print("Got text message!")
 
                 # Extract text.
-                text=table["text"]
+                text=table.get("text", " ")
 
                 # Send text to Discord.
                 self.funkbot.SendText(text, self.channelIDmessage)
 
-            if table[key]==bombresult:
-                print("Got bomb result!")
+            elif command==bombresult:
+                #print("Got bomb result!")
 
                 # Create bomb run figure.
                 fig, ax=self.funkplot.PlotBombRun(table)
@@ -135,8 +142,8 @@ class FunkSocket(socketserver.UDPServer):
                 # Send figure to Discord.
                 self.funkbot.SendFig(fig, self.channelIDrange)
 
-            elif table[key]==straferesult:
-                print("Got strafe result!")
+            elif command==straferesult:
+                #print("Got strafe result!")
 
                 # Create strafe run figure.
                 fig, ax=self.funkplot.PlotStrafeRun(table)
@@ -144,8 +151,8 @@ class FunkSocket(socketserver.UDPServer):
                 # Send figure to discord.
                 self.funkbot.SendFig(fig, self.channelIDrange)
 
-            elif table[key]==lsograde:
-                print("Got trap sheet!")
+            elif command==lsograde:
+                #print("Got trap sheet!")
 
                 # Send LSO grade.
                 self.funkbot.SendLSOEmbed(table, self.channelIDairboss)
@@ -157,7 +164,7 @@ class FunkSocket(socketserver.UDPServer):
                 self.funkbot.SendFig(fig, self.channelIDairboss)
 
             else:
-                print("ERROR: Unknown data type in table!")
+                print(f"WARNING: Unknown command in table: {command}")
         else:
-            print("ERROR: dataType not key in table!")
+            print("WARNING: not key command in table!")
             print(table)

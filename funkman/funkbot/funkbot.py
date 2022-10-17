@@ -162,7 +162,7 @@ class FunkBot(commands.Bot):
     def SendLSOEmbed(self, result, ChannelID: int):
 
         # Info message.
-        print("Creating LSO Embed")
+        #print("Creating LSO Embed")
 
         # Get date from result.
         actype=_GetVal(result, "airframe", "Unkown")
@@ -187,8 +187,8 @@ class FunkBot(commands.Bot):
 
         color=0x00ff00
         urlIm="https://i.imgur.com/1bWgcV7.png"
-        if type(points)==int:
-            if points==0:#
+        if type(points)!=str:
+            if points==0:
                 color=0x000000 #black
                 urlIm="https://i.imgur.com/rZpu9c0.png"
             elif points==1:
@@ -197,6 +197,9 @@ class FunkBot(commands.Bot):
             elif points==2:
                 color=0xFFA500 #orange
                 urlIm="https://i.imgur.com/EjviMBk.png"
+            elif points==2.5:
+                color=0xB47E59 #brown
+                urlIm="https://i.imgur.com/nYWrL4Z.png"
             elif points==3:
                 color=0xFFFF00 #yellow
                 urlIm="https://i.imgur.com/wH0Gjqx.png"
@@ -225,7 +228,8 @@ class FunkBot(commands.Bot):
         embed.add_field(name="Points", value=points, inline=True)
         embed.add_field(name="Details", value=details, inline=True)
         embed.add_field(name="Groove", value=Tgroove, inline=True)
-        embed.add_field(name="Wire", value=wire, inline=True)
+        if wire!="?":
+            embed.add_field(name="Wire", value=wire, inline=True)
         embed.add_field(name="Case", value=case, inline=True)
         embed.add_field(name="Wind", value=windondeck, inline=True)
         embed.add_field(name="Aircraft", value=actype, inline=True)
