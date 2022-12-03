@@ -8,8 +8,5 @@ setup(
     name="funkman",
     version="0.6.2",
     packages=find_packages(include=["funkman", "funkman.*"]),
-    install_requires=[
-        'discord>=1.7.3',
-        'matplotlib',
-        'numpy']
+    install_requires=["discord>=1.7.3", "matplotlib", "numpy"],
 )

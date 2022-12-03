@@ -1,7 +1,7 @@
 # FunkMan
  FunkMan is a python program that creates an easy-to-use interface between the DCS scripting environment and a Discord bot via a UDP socket connection.
  This allows you, *e.g.*, to send text messages from DCS to Discord channels.
- 
+
  Furthermore, FunkMan contains special interfaces to the [MOOSE](https://github.com/FlightControl-Master/MOOSE) classes [AIRBOSS](https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Ops.Airboss.html) and [RANGE](https://flightcontrol-master.github.io/MOOSE_DOCS_DEVELOP/Documentation/Functional.Range.html). For the AIRBOSS class, you get embeded messages when a player receives an LSO
  grade and fancy images of the trap sheet. For the RANGE class, images of the bombing impact point are send to Discord as well as as summary of a strafing run.
 

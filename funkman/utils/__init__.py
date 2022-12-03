@@ -1,9 +1,8 @@
-
-__doc__="""
+__doc__ = """
 Utils subpackage.
 """
 
 # Print we are here.
-#print("__init__ utils")
+# print("__init__ utils")
 
 from funkman.funkman import FunkMan

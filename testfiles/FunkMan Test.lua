@@ -9,7 +9,7 @@ socket:SendText("Hello World!")
 -- Bombing Ranges
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  
+
 -- Some range
 local range=RANGE:New("Practice Range")  --Functional.Range#RANGE
 
@@ -22,13 +22,13 @@ function range:OnAfterImpact(From, Event, To, Result, Player)
   local player=Player --Functional.Range#RANGE.PlayerData
   local result=Result --Functional.Range#RANGE.BombResult
   local Text=string.format("Player %s dropped ordnance at range %s in airframe %s", player.playername, result.rangename, result.airframe)
-  env.info(Text)       
+  env.info(Text)
 end
 
---- Function called when a player finished a straing run.    
+--- Function called when a player finished a straing run.
 function range:OnAfterStrafeResult(From, Event, To, Player, Result)
   local player=Player --Functional.Range#RANGE.PlayerData
-  local result=Result --Functional.Range#RANGE.BombResult  
+  local result=Result --Functional.Range#RANGE.BombResult
   local Text=string.format("Player %s strafed at range %s in airframe %s", player.playername, result.rangename, result.airframe)
   env.info(Text)
 end
@@ -55,18 +55,18 @@ local function testBomb()
   result.attackAlt = math.random(5000, 10000)
   result.attackVel = math.random(300, 500)
   result.theatre = env.mission.theatre
-  
+
   env.info("FF Test bomb! Expect impact in 1 seconds..")
-  
+
   local player={}--Functional.Range#RANGE.PlayerData
   player.playername="funkyfranky"
   player.airframe="F/A 18 Hornet"
   player.unitname="My Unit"
-  
+
   range:__Impact(1, result, player)
-  
+
 end
-  
+
 testBomb()
 
 local function testStrafe()
@@ -87,14 +87,14 @@ local function testStrafe()
   result.theatre = env.mission.theatre
 
   env.info("FF Test bomb! Expect impact in 1 seconds..")
-  
+
   local player={}--Functional.Range#RANGE.PlayerData
   player.playername="funkyfranky"
   player.airframe="F/A 18 Hornet"
   player.unitname="My Unit"
-  
+
   range:__StrafeResult(1, player, result)
-  
+
 end
 
 testStrafe()
@@ -123,7 +123,7 @@ end
 local function testtrap()
 
   local playerData = {} --Ops.Airboss#AIRBOSS.PlayerData
-  
+
   playerData.name="funkyfranky"
   playerData.airframe="FA-18C_hornet"
   playerData.callsign="My Callsign"
@@ -132,7 +132,7 @@ local function testtrap()
   playerData.wire=3
   playerData.case=1
   playerData.flag=1
-  
+
   env.info("Trap sheet data")
   for i=1,150 do
     local ts={} --Ops.Airboss#AIRBOSS.GrooveData
@@ -147,7 +147,7 @@ local function testtrap()
     --BASE:I(ts)
     table.insert(playerData.trapsheet, ts)
   end
-  
+
   local grade={} --Ops.Airboss#AIRBOSS.LSOgrade
   grade.airframe="FA-18C_hornet"
   grade.carriername="USS Stennis"
@@ -164,13 +164,13 @@ local function testtrap()
   grade.mitime=UTILS.SecondsToClock(timer.getAbsTime(), true)
   grade.wire=3
   grade.wind=25.343421
-  
+
   playerData.grade=grade
-  
+
   env.info("FF Sending AIRBOSS LSO grade in 3 seconds!")
-  
+
   airboss:__LSOGrade(3, playerData, grade)
-  
+
 end
 
 testtrap()
