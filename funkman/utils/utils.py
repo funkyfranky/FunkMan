@@ -5,30 +5,36 @@ Utilities
 import csv
 import numpy as np
 
+from logger import logger
+
+log = logger.logging.getLogger(__name__)
+
+
 def _GetVal(table, key, nil="", precision=None):
     """
     Get table value.
     """
     if key in table:
-        value=table[key]
-        if value=="false":
+        value = table[key]
+        if value == "false":
             return False
-        elif value=="true":
+        elif value == "true":
             return True
         else:
-            if precision!=None:
+            if precision != None:
                 return str(round(value, precision))
             else:
                 return value
     else:
         return nil
 
+
 def ReadTrapsheet(filename: str) -> dict:
     """Read a trap sheet into a dictionary as numpy arrays."""
 
-    print(f"Reading trap sheet from file={filename}")
+    log.info(f"Reading trap sheet from file={filename}")
 
-    d={}
+    d = {}
     try:
         with open(filename) as f:
 
@@ -37,23 +43,23 @@ def ReadTrapsheet(filename: str) -> dict:
 
             # Init array.
             for k in reader.fieldnames:
-                d[k]=np.array([])
+                d[k] = np.array([])
 
             for row in reader:
                 for k in reader.fieldnames:
                     svalue = row[k]
                     try:
                         fvalue = float(svalue)
-                        if k=="X":
+                        if k == "X":
                             # Invert X. The re-inversion is done in funkplot now.
-                            fvalue=-fvalue
-                        elif k=="Alt":
+                            fvalue = -fvalue
+                        elif k == "Alt":
                             # Convert altitude from feet to meters. Back conversion is done in funkplot now.
-                            fvalue=fvalue*0.3048
+                            fvalue = fvalue * 0.3048
                         d[k] = np.append(d[k], fvalue)
                     except ValueError:
-                        d[k]=np.append(d[k], svalue) #svalue
-    except:
-        print('ERROR!')
+                        d[k] = np.append(d[k], svalue)  # svalue
+    except Exception as e:
+        log.error(f"ERROR! - {e}")
 
     return d

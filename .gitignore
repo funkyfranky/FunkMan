@@ -1,5 +1,5 @@
 # funkman
-logs/*
+logs/
 
 # vscode
 *.code-workspace
