@@ -27,5 +27,5 @@ repos:
   hooks:
     - id: cleartoken
       name: cleartoken
-      entry: python cleartoken.py
+      entry: python pre-commit-cleartoken.py
       language: python
