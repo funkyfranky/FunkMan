@@ -20,6 +20,11 @@ repos:
       args:
         - "-l 128"
 
+- repo: https://github.com/JohnnyMorganz/StyLua
+  rev: v0.15.2
+  hooks:
+    - id: stylua-system # stylua / stylua-system / stylua-github
+
 - repo: local
   hooks:
     - id: cleartoken
