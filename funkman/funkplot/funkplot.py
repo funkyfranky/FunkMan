@@ -27,10 +27,13 @@ class AircraftType(Enum):
     HARRIER="AV8BNA"
     HAWK="T-45"
     SKYHAWK="A-4E-C"
+    RHINOE="FA-18E"
+    RHINOF="FA-18F"
+    GROWLER="EA-18G"
 
     @property
     def getAoA(self):
-        if self.value==AircraftType.HORNET.value:
+        if self.value==AircraftType.HORNET.value or self.value==AircraftType.RHINOE.value or self.value==AircraftType.RHINOF.value or self.value==AircraftType.GROWLER.value:
             return 7.4,8.1,8.8
         elif self.value==AircraftType.HAWK.value:
             return 6.75, 7.00, 7.25
@@ -86,6 +89,12 @@ class FunkPlot():
             return AircraftType.HAWK.getAoA
         elif actype==AircraftType.HORNET.value:
             return AircraftType.HORNET.getAoA
+        elif actype==AircraftType.RHINOE.value:
+            return AircraftType.RHINOE.getAoA
+        elif actype==AircraftType.RHINOF.value:
+            return AircraftType.RHINOF.getAoA
+        elif actype==AircraftType.GROWLER.value:
+            return AircraftType.GROWLER.getAoA
         elif actype==AircraftType.SKYHAWK.value:
             return AircraftType.SKYHAWK.getAoA
         elif actype==AircraftType.TOMCATA.value:
