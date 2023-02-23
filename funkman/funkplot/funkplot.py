@@ -400,6 +400,10 @@ class FunkPlot():
         AOA=np.array(trapsheet["AoA"])            # Angle of attack in AU.
         ALT=np.array(trapsheet["Alt"])*meter2feet # Altitude in feet.
 
+        if len(AOA)==0:
+            print("WARNING: AOA array is empty! Could be a WO grade")
+            return
+
         # Get other info from result.
         actype=_GetVal(result, "airframe", "Unkown")
         Tgroove=_GetVal(result, "Tgroove", "?", 1)
