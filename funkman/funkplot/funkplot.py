@@ -74,8 +74,14 @@ class FunkPlot():
         self.imageNorthUp    = plt.imread(ImagePath+"NorthUp.png")
         self.imageBullet     = plt.imread(ImagePath+"BulletHole.png")
 
-        self.imageUnicorn1   = plt.imread(ImagePath+"Unicorn1.png")
-        self.imageUnicorn2   = plt.imread(ImagePath+"Unicorn2.png")
+        try:
+            self.imageUnicorn1   = plt.imread(ImagePath+"Unicorn1.png")
+        except:
+            self.imageUnicorn1=None
+        try:
+            self.imageUnicorn2   = plt.imread(ImagePath+"Unicorn2.png")
+        except:
+            self.imageUnicorn2=None
         #self.imageUnicorn3   = plt.imread(ImagePath+"Unicorn3.png")
 
 
@@ -499,9 +505,9 @@ class FunkPlot():
             # Top-down view.
             axs[0].figure.figimage(self.imageLHAtop,   910, 340, alpha=0.75, zorder=1, clip_on=True)
 
-        if grade=="_OK_":
+        if grade=="_OK_" and (self.imageUnicorn2 is not None):
             fig.figimage(self.imageUnicorn2, 550, 450)
-        elif grade=="OK":
+        elif grade=="OK" and (self.imageUnicorn1 is not None):
             fig.figimage(self.imageUnicorn1, 550, 450)
 
         """
