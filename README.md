@@ -25,6 +25,9 @@ You need the `Moose.lua` file from the MOOSE [develop branch](https://github.com
 Finally, you need to create a discord bot. There are plenty of youtube videos around, which explain how to do this.
 Go to the http://discord.com/developers site to create a bot.
 
+#### Common Errors
+If you get `discord.errors.Forbidden: 403 Forbidden (error code: 50001): Missing Access` check that the bot has sufficient permissions.
+
 ## Installation
 There are several ways to obtain the FunkMan code. You can use `git clone` if you are familiar with git
 or download the [latest release](https://github.com/funkyfranky/FunkMan/releases) as zip file and unzip
