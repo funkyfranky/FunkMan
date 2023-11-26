@@ -303,7 +303,7 @@ class FunkPlot():
         # Read strafe pit image.        
         plt.imshow(self.imageStrafePit, interpolation='none', origin='upper', extent=[-zmax, zmax, -zmax, zmax], clip_on=True)
 
-        for _ in range(1): #(roundsHit):
+        for _ in range(roundsHit):
 
             r=np.random.randint(0,100)
             p=np.random.randint(0,360)
