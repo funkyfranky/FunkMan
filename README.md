@@ -19,7 +19,12 @@ The additional libraries can be installed with pip. These are:
 - [numpy](https://numpy.org/): `pip install numpy`
 
 ### MOOSE
-You need the `Moose.lua` file from the MOOSE [develop branch](https://github.com/FlightControl-Master/MOOSE_INCLUDE/tree/develop/Moose_Include_Static).
+Download the `Moose.lua` file from the MOOSE [develop branch](https://github.com/FlightControl-Master/MOOSE_INCLUDE/tree/develop/Moose_Include_Static).
+
+Then load it in your mission via the triggers section in the mission editor:
+![image](https://github.com/funkyfranky/FunkMan/assets/28947887/28745805-edb9-4251-9aba-8efc3cbf1914)
+
+Also read the [MOOSE docs](https://flightcontrol-master.github.io/MOOSE/) and join the [MOOSE discord](https://discord.gg/gj68fm969S).
 
 ### Discord Bot
 Finally, you need to create a discord bot. There are plenty of youtube videos around, which explain how to do this.
