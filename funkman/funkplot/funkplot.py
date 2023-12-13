@@ -214,7 +214,7 @@ class FunkPlot():
         plt.grid(axis='both', color='red', alpha=0.3)
 
         # Annotation box with attack data.
-        offsetbox = TextArea(f'{_GetVal(result, "airframe", "Unknown AC")}\nh={attackAlt} ft\n$v$={attackVel} kts\n$\psi$={attackHdg}°',
+        offsetbox = TextArea(f'{_GetVal(result, "airframe", "Unknown AC")}\nh={attackAlt} ft\n$v$={attackVel} kts\n$\\psi$={attackHdg}°',
         textprops=dict(color="green", backgroundcolor=PlotColor.FACE.value))
         ab = AnnotationBbox(offsetbox, (x, y),
                             xybox=(0.9, 0.8),
@@ -224,7 +224,7 @@ class FunkPlot():
         ax.add_artist(ab)
 
         # Annotation box with weapon data.
-        offsetbox = TextArea(f'{_GetVal(result, "weapon")}\nr={distance} m\n$\phi$={radial}°\n{_GetVal(result, "quality", "?")}',
+        offsetbox = TextArea(f'{_GetVal(result, "weapon")}\nr={distance} m\n$\\phi$={radial}°\n{_GetVal(result, "quality", "?")}',
         textprops=dict(color="crimson", backgroundcolor=PlotColor.FACE.value))
         ab = AnnotationBbox(offsetbox, (x, y),
                             xybox=(0.9, 0.3),
