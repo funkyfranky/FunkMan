@@ -112,12 +112,28 @@ def _ReadConfig(funkman: FunkMan) -> None:
     # FUNKBOT
     try:
         section=config["FUNKBOT"]
+
         funkman.token=section.get("TOKEN", "FROM_OS_ENV")
-        funkman.channelIDmain=section.getint("CHANNELID_MAIN", 123456789)
-        funkman.channelIDrange=section.getint("CHANNELID_RANGE", funkman.channelIDmain)
-        funkman.channelIDairboss=section.getint("CHANNELID_AIRBOSS", funkman.channelIDmain)
-    except:
-        print("ERROR: [FUNKBOT] section missing in ini file!")
+        if funkman.token=="FROM_OS_ENV" or funkman.token=="" or funkman.token.startswith("YOUR_BOT_TOKEN"):
+            funkman.token=os.getenv("FUNKMAN_DISCORD_TOKEN")
+            
+        funkman.channelIDmain=section.getint("CHANNELID_MAIN", 0)
+        if funkman.channelIDmain==0 or funkman.channelIDmain=="":
+            funkman.channelIDmain=os.getenv("FUNKMAN_CHANNELID_MAIN")
+
+        funkman.channelIDrange=section.getint("CHANNELID_RANGE", 0)
+        if funkman.channelIDrange==0 or funkman.channelIDrange=="":
+            funkman.channelIDrange=os.getenv("FUNKMAN_CHANNELID_RANGE")
+        if funkman.channelIDrange is None:
+            funkman.channelIDrange=funkman.channelIDmain
+
+        funkman.channelIDairboss=section.getint("CHANNELID_AIRBOSS", 0)
+        if funkman.channelIDairboss==0 or funkman.channelIDairboss=="":
+            funkman.channelIDairboss=os.getenv("FUNKMAN_CHANNELID_AIRBOSS")
+        if funkman.channelIDairboss is None:
+            funkman.channelIDairboss=funkman.channelIDmain
+    except Exception as ex:
+        print(f"ERROR: [FUNKBOT] section missing in ini file! {ex}")
 
     # FUNKSOCK
     try:
