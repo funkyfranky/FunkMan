@@ -269,7 +269,7 @@ class FunkPlot():
 
         if roundsFired==0:
             print("No rounds fired in PlotStrafeRun ==> No plot")
-            return
+            return None, None
 
         # Debug info.
         print(f"Plotting Strafe Run for player {player}!")

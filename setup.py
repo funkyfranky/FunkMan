@@ -6,7 +6,7 @@ setup(
     author="funkyfranky",
     description="Interface between DCS/MOOSE and Discord via an UDP socket.",
     name="funkman",
-    version="0.7.1",
+    version="0.7.2",
     packages=find_packages(include=["funkman", "funkman.*"]),
     install_requires=[
         'discord>=2.0.0',

@@ -149,7 +149,8 @@ class FunkSocket(socketserver.UDPServer):
                 fig, ax=self.funkplot.PlotStrafeRun(table)
 
                 # Send figure to discord.
-                self.funkbot.SendFig(fig, self.channelIDrange)
+                if fig is not None:
+                    self.funkbot.SendFig(fig, self.channelIDrange)
 
             elif command==lsograde:
                 #print("Got trap sheet!")
