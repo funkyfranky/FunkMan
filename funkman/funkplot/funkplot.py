@@ -267,6 +267,10 @@ class FunkPlot():
         missiontime=_GetVal(result, "clock", "?")
         missiondate=_GetVal(result, "midate", "?")
 
+        if roundsFired==0:
+            print("No rounds fired in PlotStrafeRun ==> No plot")
+            return
+
         # Debug info.
         print(f"Plotting Strafe Run for player {player}!")
 
@@ -303,6 +307,9 @@ class FunkPlot():
         # Read strafe pit image.        
         plt.imshow(self.imageStrafePit, interpolation='none', origin='upper', extent=[-zmax, zmax, -zmax, zmax], clip_on=True)
 
+        # Init x and y because of github issue #8 (Annotation box error "cannot access local variable 'x' where it is not associated with a value")
+        x=0
+        y=0
         for _ in range(roundsHit):
 
             r=np.random.randint(0,100)
