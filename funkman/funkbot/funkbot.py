@@ -99,14 +99,14 @@ class FunkBot(commands.Bot):
         """
         Async send text message to channel.
         """
-        channel=self.get_channel(ChannelID)
+        channel=self.get_channel(int(ChannelID))
         await channel.send(Text)
 
     def SendText(self, Text: str, ChannelID: int):
         """
         Send text message to channel using loop.create_task().
         """
-        channel=self.get_channel(ChannelID)
+        channel=self.get_channel(int(ChannelID))
         try:
             self.loop.create_task(channel.send(Text))
         except:
@@ -116,7 +116,7 @@ class FunkBot(commands.Bot):
         """
         Send discord file.
         """
-        channel=self.get_channel(ChannelID)
+        channel=self.get_channel(int(ChannelID))
         if Embed:
             self.loop.create_task(channel.send(file=DiscordFile, embed=Embed))
         else:
@@ -126,7 +126,7 @@ class FunkBot(commands.Bot):
         """
         Send discord file.
         """
-        channel=self.get_channel(ChannelID)
+        channel=self.get_channel(int(ChannelID))
         self.loop.create_task(channel.send(file=DiscordFile))
 
     def SendIO(self, DataStream: io.BytesIO, ChannelID: int):

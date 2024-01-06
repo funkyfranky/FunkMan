@@ -75,15 +75,15 @@ class FunkSocket(socketserver.UDPServer):
 
     def SetChannelIdMessage(self, ChannelID):
         """Set channel ID for text messages."""
-        self.channelIDmessage=ChannelID
+        self.channelIDmessage=int(ChannelID)
 
     def SetChannelIdRange(self, ChannelID):
         """Set channel ID for Range figures."""
-        self.channelIDrange=ChannelID
+        self.channelIDrange=int(ChannelID)
 
     def SetChannelIdAirboss(self, ChannelID):
         """Set channel ID for Airboss."""
-        self.channelIDairboss=ChannelID
+        self.channelIDairboss=int(ChannelID)
 
     def Start(self):
         """Start socket server."""
