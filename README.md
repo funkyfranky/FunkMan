@@ -50,13 +50,13 @@ are the Token of your Discord bot and the ID of Discord channel(s), where FunkMa
 Another way to install funkman is via a Docker container. You first need to download and install the docker desktop app.
 
 Then you pull the funkman image from docker hub via the command line 
-```docker pull funkyfranky/funkman:v0.7```
+```docker pull funkyfranky/funkman```
 
 The you can create and run an image via
 ```
-docker run -p 10042:10042/udp -e FUNKMAN_DISCORD_TOKEN=INSERT_YOUR_TOKEN -e FUNKMAN_CHANNELID_MAIN=1011372894162526329 -e FUNKMAN_CHANNELID_RANGE=1006216842509041786 -e FUNKMAN_CHANNELID_AIRBOSS=1011372920968323155 funkyfranky/funkman:v0.7
+docker run -p 10042:10042/udp -e FUNKMAN_DISCORD_TOKEN=INSERT_YOUR_TOKEN -e FUNKMAN_CHANNELID_MAIN=1011372894162526329 -e FUNKMAN_CHANNELID_RANGE=1006216842509041786 -e FUNKMAN_CHANNELID_AIRBOSS=1011372920968323155 funkyfranky/funkman
 ```
-Note here the discord token as well as the discord channel IDs have to be provided as an environment variable (`-e`parameters). The `FUNKMAN_CHANNELID_RANGE` and `FUNKMAN_CHANNELID_AIRBOSS` are optional.
+Note that here the discord token as well as the discord channel IDs have to be provided as an environment variable (`-e`parameters) and not via the config file. The `FUNKMAN_CHANNELID_RANGE` and `FUNKMAN_CHANNELID_AIRBOSS` are optional.
 
 ## Config File
 The config file consists of multiple sections, each starting with square brackets.
