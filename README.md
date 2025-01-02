@@ -58,6 +58,22 @@ docker run -p 10042:10042/udp -e FUNKMAN_DISCORD_TOKEN=INSERT_YOUR_TOKEN -e FUNK
 ```
 Note that here the discord token as well as the discord channel IDs have to be provided as an environment variable (`-e`parameters) and not via the config file. The `FUNKMAN_CHANNELID_RANGE` and `FUNKMAN_CHANNELID_AIRBOSS` are optional.
 
+#### Docker Compose
+Alternatively, you can use docker compose with the yaml file
+```yaml
+services:
+  funkman:
+    image: funkyfranky/funkman
+    ports: 
+      - 10042:10042/udp
+    environment:
+      - FUNKMAN_DISCORD_TOKEN=<your discord token here>
+      - FUNKMAN_CHANNELID_MAIN=<your main channel id>
+      - FUNKMAN_CHANNELID_RANGE=<your (optional) range channel id>
+      - FUNKMAN_CHANNELID_AIRBOSS=<your (optional) airboss channel id>
+    restart: always
+```
+
 ## Config File
 The config file consists of multiple sections, each starting with square brackets.
 
