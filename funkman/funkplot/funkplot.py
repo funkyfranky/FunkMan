@@ -204,33 +204,33 @@ class FunkPlot():
 
         # Attack heading arrow in North Up image.
         xa,ya=self._Polar2Cart(30, float(attackHdg))
-        ax.arrow(north, north, xa, ya, head_width=5, head_length=5, zorder=501, length_includes_head=True, color="green")
+        ax.arrow(north, north, xa, ya, head_width=5, head_length=5, zorder=501, length_includes_head=True, color="lime")
 
         # Attack heading arrow.
         xa,ya=self._Polar2Cart(30, float(radial))
-        ax.arrow(north, north, xa, ya, head_width=5, head_length=5, zorder=500, length_includes_head=True, color="red")
+        ax.arrow(north, north, xa, ya, head_width=5, head_length=5, zorder=500, length_includes_head=True, color="yellow")
 
         # Plot grid.
         plt.grid(axis='both', color='red', alpha=0.3)
 
         # Annotation box with attack data.
         offsetbox = TextArea(f'{_GetVal(result, "airframe", "Unknown AC")}\nh={attackAlt} ft\n$v$={attackVel} kts\n$\\psi$={attackHdg}°',
-        textprops=dict(color="green", backgroundcolor=PlotColor.FACE.value))
+        textprops=dict(color="lime", backgroundcolor=PlotColor.FACE.value))
         ab = AnnotationBbox(offsetbox, (x, y),
                             xybox=(0.9, 0.8),
                             xycoords='figure fraction',
                             boxcoords="figure fraction", #, box_alignment=(1.1, 1.1))
-                            bboxprops =dict(boxstyle="round, pad=0.6", fc=PlotColor.FACE.value, ec="green", lw=1.2))
+                            bboxprops =dict(boxstyle="round, pad=0.6", fc=PlotColor.FACE.value, ec="lime", lw=1.2))
         ax.add_artist(ab)
 
         # Annotation box with weapon data.
         offsetbox = TextArea(f'{_GetVal(result, "weapon")}\nr={distance} m\n$\\phi$={radial}°\n{_GetVal(result, "quality", "?")}',
-        textprops=dict(color="crimson", backgroundcolor=PlotColor.FACE.value))
+        textprops=dict(color="yellow", backgroundcolor=PlotColor.FACE.value))
         ab = AnnotationBbox(offsetbox, (x, y),
                             xybox=(0.9, 0.3),
                             xycoords='data',
                             boxcoords="figure fraction",
-                            bboxprops =dict(boxstyle="round, pad=0.6", fc=PlotColor.FACE.value, ec="crimson", lw=1.2),
+                            bboxprops =dict(boxstyle="round, pad=0.6", fc=PlotColor.FACE.value, ec="yellow", lw=1.2),
                             arrowprops=dict(arrowstyle="->"))
         ax.add_artist(ab)
 
@@ -349,13 +349,13 @@ class FunkPlot():
 
         # Annotation box with weapon data.
         text=str(f'Fired: {Nfired}\nHits: {Nhits}\nAccu={Accu:.1f}%\n{Qual}')
-        offsetbox = TextArea(text, textprops=dict(color="green", backgroundcolor=PlotColor.FACE.value))
+        offsetbox = TextArea(text, textprops=dict(color="lime", backgroundcolor=PlotColor.FACE.value))
         ab = AnnotationBbox(offsetbox,
                             (x, y),
                             xybox=(zmax, -zmax/2),
                             xycoords='data',
                             boxcoords="data",
-                            bboxprops =dict(boxstyle="round, pad=0.6", fc=PlotColor.FACE.value, ec="green", lw=1.2),
+                            bboxprops =dict(boxstyle="round, pad=0.6", fc=PlotColor.FACE.value, ec="lime", lw=1.2),
                             zorder=1000)
         ax.add_artist(ab)
 
